@@ -1,0 +1,79 @@
+<mat-toolbar class="app-toolbar" color="primary">
+  <!-- Logo -->
+  <a class="logo" routerLink="/" aria-label="StockHub Home">
+    <mat-icon class="logo-icon">trending_up</mat-icon>
+    <span class="logo-text">StockHub</span>
+  </a>
+
+  <!-- Global Search -->
+  <div class="search-wrapper">
+    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+  </div>
+
+  <span class="toolbar-spacer"></span>
+
+  <!-- Navigation Links -->
+  <nav class="nav-links">
+    <a mat-button routerLink="/screener" routerLinkActive="active-link">
+      <mat-icon>filter_list</mat-icon>
+      <span>Screener</span>
+    </a>
+    <a mat-button routerLink="/compare" routerLinkActive="active-link">
+      <mat-icon>compare</mat-icon>
+      <span>Compare</span>
+    </a>
+    <a mat-button routerLink="/watchlists" routerLinkActive="active-link">
+      <mat-icon>bookmark</mat-icon>
+      <span>Watchlists</span>
+    </a>
+  </nav>
+
+  <!-- Auth Section -->
+  <div class="auth-section">
+    <ng-container *ngIf="!isLoggedIn; else userMenu">
+      <button mat-button (click)="login()">Login</button>
+      <button mat-flat-button color="accent" (click)="register()">Sign Up</button>
+    </ng-container>
+
+    <ng-template #userMenu>
+      <button mat-button [matMenuTriggerFor]="menu" class="user-btn">
+        <mat-icon>account_circle</mat-icon>
+        <span class="user-name">{{ userDisplayName }}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="goToWatchlists()">
+          <mat-icon>bookmark</mat-icon>
+          <span>My Watchlists</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </ng-template>
+  </div>
+</mat-toolbar>
+
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Footer -->
+<footer class="app-footer">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <mat-icon>trending_up</mat-icon>
+      <span>StockHub</span>
+    </div>
+    <p class="footer-copy">&copy; {{ currentYear }} StockHub. All rights reserved.</p>
+    <div class="footer-links">
+      <a routerLink="/screener">Screener</a>
+      <a routerLink="/compare">Compare</a>
+      <a routerLink="/search">Search</a>
+    </div>
+  </div>
+</footer>

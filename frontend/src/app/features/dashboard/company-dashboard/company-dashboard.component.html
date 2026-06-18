@@ -1,0 +1,330 @@
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="store.loading() && !store.data()">
+    <app-loading-spinner [diameter]="56" message="Loading dashboard..." />
+  </div>
+
+  <!-- Error State -->
+  <div class="error-section" *ngIf="store.error() && !store.data()">
+    <app-empty-state
+      icon="error_outline"
+      title="Unable to Load Dashboard"
+      [message]="store.error()!"
+      actionLabel="Retry"
+      (action)="retry()"
+    />
+  </div>
+
+  <!-- Dashboard Content -->
+  <ng-container *ngIf="store.data()">
+    <!-- Company Header Section -->
+    <section class="company-header">
+      <div class="header-main">
+        <div class="header-left">
+          <div class="company-logo-placeholder">
+            <span class="logo-text">{{ store.ticker() | slice:0:2 }}</span>
+          </div>
+          <div class="company-info">
+            <div class="company-name-row">
+              <h1 class="company-name">{{ store.name() }}</h1>
+              <span class="ticker-badge">{{ store.ticker() }}</span>
+            </div>
+            <div class="price-row">
+              <span class="current-price">{{ store.currentPrice() | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span class="price-change" [style.color]="store.priceChangeColor()">
+                <mat-icon class="change-icon">{{ store.priceChange() >= 0 ? 'arrow_drop_up' : 'arrow_drop_down' }}</mat-icon>
+                {{ store.priceChange() | currency:'USD':'symbol':'1.2-2' }}
+                ({{ store.priceChangePercent() | stockPercent:2 }})
+              </span>
+            </div>
+            <div class="badge-row">
+              <mat-chip class="sector-chip" *ngIf="store.sector()">{{ store.sector() }}</mat-chip>
+              <mat-chip class="industry-chip" *ngIf="store.industry()">{{ store.industry() }}</mat-chip>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button mat-stroked-button color="primary" (click)="onAddToWatchlist()">
+            <mat-icon>add</mat-icon>
+            Add to Watchlist
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Price Chart Section -->
+    <section class="price-chart-section">
+      <mat-card class="chart-card">
+        <mat-card-content>
+          <app-price-chart
+            *ngIf="store.priceHistory().length > 0"
+            [data]="store.priceHistory()"
+            [loading]="store.loading()"
+          />
+          <div class="chart-empty" *ngIf="store.priceHistory().length === 0">
+            <p>No price history available</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Metrics Grid -->
+    <section class="metrics-section">
+      <h3 class="section-title">Key Metrics</h3>
+      <div class="metrics-grid">
+        <app-metric-card
+          *ngFor="let metric of store.keyMetrics()"
+          [label]="metric.label"
+          [value]="metric.value"
+          [format]="metric.format"
+          [trend]="metric.trend"
+          [tooltip]="metric.tooltip"
+        />
+      </div>
+    </section>
+
+    <!-- Tabs Section -->
+    <section class="tabs-section">
+      <mat-card class="tabs-card">
+        <mat-card-content>
+          <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex" animationDuration="200ms">
+            <!-- Overview Tab -->
+            <mat-tab label="Overview">
+              <div class="tab-content">
+                <div class="overview-grid">
+                  <div class="overview-description">
+                    <h4 class="subsection-title">About {{ store.name() }}</h4>
+                    <p class="description-text">{{ store.description() || 'No description available.' }}</p>
+                  </div>
+                  <div class="overview-facts">
+                    <h4 class="subsection-title">Key Facts</h4>
+                    <div class="facts-list">
+                      <div class="fact-item">
+                        <span class="fact-label">Headquarters</span>
+                        <span class="fact-value">{{ store.headquarters() || 'N/A' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Employees</span>
+                        <span class="fact-value">{{ store.employees() | number }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Sector</span>
+                        <span class="fact-value">{{ store.sector() || 'N/A' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Industry</span>
+                        <span class="fact-value">{{ store.industry() || 'N/A' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Day High</span>
+                        <span class="fact-value">{{ store.dayHigh() | currency:'USD':'symbol':'1.2-2' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Day Low</span>
+                        <span class="fact-value">{{ store.dayLow() | currency:'USD':'symbol':'1.2-2' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Previous Close</span>
+                        <span class="fact-value">{{ store.previousClose() | currency:'USD':'symbol':'1.2-2' }}</span>
+                      </div>
+                      <div class="fact-item">
+                        <span class="fact-label">Volume</span>
+                        <span class="fact-value">{{ store.volume() | bigNumber }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="overview-footer" *ngIf="store.lastUpdated()">
+                  <span class="data-source">Data source: {{ store.dataSource() || 'N/A' }}</span>
+                  <span class="last-updated">Last updated: {{ store.lastUpdated() | date:'medium' }}</span>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- Financials Tab -->
+            <mat-tab label="Financials">
+              <div class="tab-content">
+                <div class="financials-controls">
+                  <mat-button-toggle-group [value]="period" (change)="onPeriodChange($event.value)" class="period-toggle">
+                    <mat-button-toggle value="ANNUAL">Annual</mat-button-toggle>
+                    <mat-button-toggle value="QUARTERLY">Quarterly</mat-button-toggle>
+                  </mat-button-toggle-group>
+
+                  <mat-form-field appearance="outline" class="years-select">
+                    <mat-label>Years</mat-label>
+                    <mat-select [value]="selectedYears" (selectionChange)="onYearsChange($event.value)">
+                      <mat-option [value]="3">3 Years</mat-option>
+                      <mat-option [value]="5">5 Years</mat-option>
+                      <mat-option [value]="10">10 Years</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <app-loading-spinner *ngIf="financialStatementsLoading" [diameter]="36" message="Loading financials..." />
+
+                <app-data-table
+                  *ngIf="!financialStatementsLoading"
+                  [columns]="financialColumns"
+                  [data]="financialStatements"
+                  [sortable]="true"
+                  [loading]="false"
+                />
+
+                <app-empty-state
+                  *ngIf="!financialStatementsLoading && financialStatements.length === 0"
+                  icon="insert_chart_outlined"
+                  title="No Financial Data"
+                  message="Financial statements are not available for this company."
+                />
+              </div>
+            </mat-tab>
+
+            <!-- Metrics Tab -->
+            <mat-tab label="Metrics">
+              <div class="tab-content">
+                <div class="metrics-detail">
+                  <h4 class="subsection-title">Profitability</h4>
+                  <div class="metric-bars">
+                    <div class="metric-bar-row">
+                      <span class="bar-label">Gross Margin</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-green" [style.width.%]="(store.data()?.grossMargin || 0)">
+                          <span class="bar-value">{{ store.data()?.grossMargin | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">Net Margin</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-blue" [style.width.%]="(store.data()?.netMargin || 0)">
+                          <span class="bar-value">{{ store.data()?.netMargin | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">ROE</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-purple" [style.width.%]="(store.data()?.roe || 0)">
+                          <span class="bar-value">{{ store.data()?.roe | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">ROA</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-orange" [style.width.%]="(store.data()?.roa || 0)">
+                          <span class="bar-value">{{ store.data()?.roa | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h4 class="subsection-title">Growth</h4>
+                  <div class="metric-bars">
+                    <div class="metric-bar-row">
+                      <span class="bar-label">Revenue Growth (YoY)</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-teal" [style.width.%]="(store.data()?.revenueGrowthYoY || 0)">
+                          <span class="bar-value">{{ store.data()?.revenueGrowthYoY | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">EPS Growth (YoY)</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-teal" [style.width.%]="(store.data()?.epsGrowthYoY || 0)">
+                          <span class="bar-value">{{ store.data()?.epsGrowthYoY | stockPercent:1 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h4 class="subsection-title">Valuation</h4>
+                  <div class="metric-bars">
+                    <div class="metric-bar-row">
+                      <span class="bar-label">P/E Ratio</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-indigo" [style.width.%]="((store.data()?.peRatio || 0) / 40 * 100 > 100 ? 100 : (store.data()?.peRatio || 0) / 40 * 100)">
+                          <span class="bar-value">{{ store.data()?.peRatio | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">Debt to Equity</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-red" [style.width.%]="((store.data()?.debtToEquity || 0) / 3 * 100 > 100 ? 100 : (store.data()?.debtToEquity || 0) / 3 * 100)">
+                          <span class="bar-value">{{ store.data()?.debtToEquity | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="metric-bar-row">
+                      <span class="bar-label">Dividend Yield</span>
+                      <div class="bar-track">
+                        <div class="bar-fill bar-green" [style.width.%]="((store.data()?.dividendYield || 0) / 5 * 100 > 100 ? 100 : (store.data()?.dividendYield || 0) / 5 * 100)">
+                          <span class="bar-value">{{ store.data()?.dividendYield | stockPercent:2 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Industry Context -->
+                  <div class="industry-context" *ngIf="store.industryContext()">
+                    <h4 class="subsection-title">Industry Context</h4>
+                    <div class="context-grid">
+                      <div class="context-item">
+                        <span class="context-label">Industry Avg PE</span>
+                        <span class="context-value">{{ store.industryContext()?.avgPE | number:'1.2-2' }}</span>
+                      </div>
+                      <div class="context-item">
+                        <span class="context-label">PE Percentile</span>
+                        <span class="context-value">{{ (store.industryContext()?.pePercentile || 0) | percent:'1.0-0' }}</span>
+                      </div>
+                      <div class="context-item">
+                        <span class="context-label">Industry Avg ROE</span>
+                        <span class="context-value">{{ store.industryContext()?.avgROE | stockPercent:1 }}</span>
+                      </div>
+                      <div class="context-item">
+                        <span class="context-label">ROE Percentile</span>
+                        <span class="context-value">{{ (store.industryContext()?.roePercentile || 0) | percent:'1.0-0' }}</span>
+                      </div>
+                      <div class="context-item">
+                        <span class="context-label">Industry Avg Rev Growth</span>
+                        <span class="context-value">{{ store.industryContext()?.avgRevenueGrowth | stockPercent:1 }}</span>
+                      </div>
+                      <div class="context-item">
+                        <span class="context-label">Industry Avg Net Margin</span>
+                        <span class="context-value">{{ store.industryContext()?.avgNetMargin | stockPercent:1 }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- Peers Tab -->
+            <mat-tab label="Peers">
+              <div class="tab-content">
+                <app-loading-spinner *ngIf="peersLoading" [diameter]="36" message="Loading peers..." />
+
+                <app-data-table
+                  *ngIf="!peersLoading"
+                  [columns]="peerColumns"
+                  [data]="peers"
+                  [sortable]="true"
+                  [loading]="false"
+                />
+
+                <app-empty-state
+                  *ngIf="!peersLoading && peers.length === 0"
+                  icon="groups"
+                  title="No Peer Data"
+                  message="Peer comparison data is not available for this company."
+                />
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </ng-container>
+</div>

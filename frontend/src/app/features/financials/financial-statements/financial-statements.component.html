@@ -1,0 +1,98 @@
+<div class="financials-container">
+  <!-- Header -->
+  <div class="financials-header">
+    <div class="header-left">
+      <h2 class="page-title">Financial Statements</h2>
+      <span class="ticker-badge">{{ ticker }}</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <mat-card class="controls-card">
+    <mat-card-content>
+      <div class="controls-row">
+        <div class="control-group">
+          <span class="control-label">Statement</span>
+          <mat-button-toggle-group
+            [value]="statementType"
+            (change)="onStatementTypeChange($event.value)"
+            class="control-toggle"
+          >
+            <mat-button-toggle value="income">Income Statement</mat-button-toggle>
+            <mat-button-toggle value="balance">Balance Sheet</mat-button-toggle>
+            <mat-button-toggle value="cashflow">Cash Flow</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Period</span>
+          <mat-button-toggle-group
+            [value]="period"
+            (change)="onPeriodChange($event.value)"
+            class="control-toggle"
+          >
+            <mat-button-toggle value="ANNUAL">Annual</mat-button-toggle>
+            <mat-button-toggle value="QUARTERLY">Quarterly</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Range</span>
+          <mat-form-field appearance="outline" class="years-select">
+            <mat-select [value]="selectedYears" (selectionChange)="onYearsChange($event.value)">
+              <mat-option [value]="3">3 Years</mat-option>
+              <mat-option [value]="5">5 Years</mat-option>
+              <mat-option [value]="10">10 Years</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Statement Title -->
+  <div class="statement-header">
+    <h3 class="statement-title">
+      {{ statementType === 'income' ? 'Income Statement' : statementType === 'balance' ? 'Balance Sheet' : 'Cash Flow Statement' }}
+      <span class="period-badge">{{ period === 'ANNUAL' ? 'Annual' : 'Quarterly' }}</span>
+    </h3>
+    <span class="range-badge">Last {{ selectedYears }} years</span>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="loading">
+    <app-loading-spinner [diameter]="48" message="Loading financial data..." />
+  </div>
+
+  <!-- Error State -->
+  <div class="error-section" *ngIf="error && !loading">
+    <app-empty-state
+      icon="error_outline"
+      title="Failed to Load Data"
+      [message]="error"
+      actionLabel="Retry"
+      (action)="retry()"
+    />
+  </div>
+
+  <!-- Data Table -->
+  <mat-card class="data-card" *ngIf="!loading && !error && data.length > 0">
+    <mat-card-content>
+      <app-data-table
+        [columns]="columns"
+        [data]="data"
+        [sortable]="true"
+        [loading]="false"
+      />
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Empty State -->
+  <div class="empty-section" *ngIf="!loading && !error && data.length === 0">
+    <app-empty-state
+      icon="insert_chart_outlined"
+      title="No Data Available"
+      message="Financial statements are not available for the selected criteria."
+    />
+  </div>
+</div>

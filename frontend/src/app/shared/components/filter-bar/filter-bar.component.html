@@ -1,0 +1,71 @@
+<div class="filter-bar">
+  <div class="filter-chips">
+    <ng-container *ngFor="let filter of filters">
+      <button
+        mat-stroked-button
+        [matMenuTriggerFor]="menu"
+        class="filter-chip"
+        [class.active]="
+          filter.type === 'range'
+            ? filterValues[filter.field] !== filter.min
+            : filterValues[filter.field]?.length > 0
+        "
+      >
+        {{ getFilterLabel(filter) }}
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #menu="matMenu" class="filter-menu">
+        <div class="menu-content" (click)="$event.stopPropagation()">
+          <!-- Range filter -->
+          <ng-container *ngIf="filter.type === 'range'">
+            <div class="range-header">
+              <span class="range-label">{{ filter.label }}</span>
+              <span class="range-value">{{
+                filterValues[filter.field]
+              }}</span>
+            </div>
+            <mat-slider
+              [min]="filter.min || 0"
+              [max]="filter.max || 100"
+              [step]="1"
+              discrete
+            >
+              <input
+                matSliderThumb
+                [value]="filterValues[filter.field]"
+                (valueChange)="onRangeChange(filter.field, $event)"
+              />
+            </mat-slider>
+          </ng-container>
+
+          <!-- Select filter -->
+          <ng-container *ngIf="filter.type === 'select'">
+            <div class="select-header">{{ filter.label }}</div>
+            <div class="checkbox-list">
+              <mat-checkbox
+                *ngFor="let opt of filter.options"
+                [checked]="filterValues[filter.field]?.includes(opt.value)"
+                (change)="
+                  onCheckboxChange(filter.field, opt, $event.checked)
+                "
+              >
+                {{ opt.label }}
+              </mat-checkbox>
+            </div>
+          </ng-container>
+        </div>
+      </mat-menu>
+    </ng-container>
+
+    <button
+      *ngIf="hasActiveFilters()"
+      mat-button
+      color="warn"
+      class="clear-btn"
+      (click)="onClearAll()"
+    >
+      Clear All ({{ getActiveCount() }})
+    </button>
+  </div>
+</div>

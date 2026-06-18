@@ -1,0 +1,195 @@
+.watchlist-list-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  min-height: calc(100vh - 64px);
+}
+
+.watchlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    color: #f1f5f9;
+  }
+
+  .watchlist-count {
+    font-size: 14px;
+    color: #64748b;
+  }
+}
+
+// Create form card
+.create-form-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  h3 {
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+// Error state
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  background: #1e293b;
+  border-radius: 12px;
+  border: 1px solid #334155;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    color: #cbd5e1;
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+// Watchlist Grid
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.watchlist-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.watchlist-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: #475569;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  mat-card-content {
+    flex: 1;
+  }
+
+  mat-card-actions {
+    padding: 8px 16px 12px;
+  }
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.default-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #1e40af;
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.watchlist-card:hover .delete-btn {
+  opacity: 1;
+}
+
+.card-meta {
+  margin-top: 8px;
+}
+
+.stock-count-chip {
+  --mdc-chip-container-shape: 8px;
+}
+
+.date-chip {
+  --mdc-chip-container-shape: 8px;
+  color: #64748b !important;
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .watchlist-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .watchlist-grid {
+    grid-template-columns: 1fr;
+  }
+}

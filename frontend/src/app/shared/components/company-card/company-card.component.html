@@ -1,0 +1,32 @@
+<mat-card
+  class="company-card"
+  [routerLink]="['/stocks', ticker]"
+  role="link"
+  tabindex="0"
+>
+  <mat-card-content class="card-content">
+    <div class="card-header">
+      <div class="card-identity">
+        <span class="card-ticker">{{ ticker | tickerFormat }}</span>
+        <span class="card-name">{{ name }}</span>
+      </div>
+      <mat-chip class="sector-chip" highlighted>{{ sector }}</mat-chip>
+    </div>
+    <div class="card-footer">
+      <div class="price-section">
+        <span class="price-value">${{ price.toFixed(2) }}</span>
+        <span
+          class="price-change"
+          [ngClass]="{
+            positive: priceChangePercent > 0,
+            negative: priceChangePercent < 0,
+            neutral: priceChangePercent === 0
+          }"
+        >
+          {{ priceChangePercent | stockPercent }}
+        </span>
+      </div>
+      <span class="market-cap">{{ marketCap | bigNumber }}</span>
+    </div>
+  </mat-card-content>
+</mat-card>

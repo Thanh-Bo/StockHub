@@ -1,0 +1,140 @@
+.financials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.financials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .ticker-badge {
+    background: #e2e8f0;
+    color: #475569;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+.controls-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.controls-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .control-toggle {
+    border-radius: 8px;
+  }
+
+  .years-select {
+    width: 140px;
+  }
+}
+
+.statement-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .statement-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #334155;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .period-badge {
+      font-size: 12px;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+  }
+
+  .range-badge {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+}
+
+.loading-section {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.error-section,
+.empty-section {
+  padding: 60px 0;
+}
+
+.data-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .financials-container {
+    padding: 16px;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+
+    .years-select {
+      width: 100%;
+    }
+  }
+
+  .page-title {
+    font-size: 22px !important;
+  }
+}

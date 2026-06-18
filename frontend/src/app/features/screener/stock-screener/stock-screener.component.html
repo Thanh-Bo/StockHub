@@ -1,0 +1,285 @@
+<div class="screener-page">
+  <!-- Header -->
+  <header class="screener-header">
+    <h1>Stock Screener</h1>
+    <button mat-stroked-button (click)="toggleLeftPanel()">
+      <mat-icon>{{ leftPanelOpen() ? 'chevron_left' : 'tune' }}</mat-icon>
+      {{ leftPanelOpen() ? 'Hide Filters' : 'Show Filters' }}
+    </button>
+  </header>
+
+  <div class="screener-layout" [class.panel-closed]="!leftPanelOpen()">
+    <!-- LEFT PANEL: Filters -->
+    <aside class="filter-panel" *ngIf="leftPanelOpen()">
+      <div class="filter-panel-header">
+        <h3>Filters</h3>
+        <span
+          class="filter-count"
+          [matBadge]="store.activeFilterCount()"
+          matBadgeColor="primary"
+          [matBadgeHidden]="store.activeFilterCount() === 0"
+        ></span>
+      </div>
+
+      <mat-accordion multi>
+        <!-- Market Cap -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Market Cap</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ getMarketCapSliderLabel(marketCapRange()[0]) }}</span>
+              <span>{{ getMarketCapSliderLabel(marketCapRange()[1]) }}</span>
+            </div>
+            <mat-slider discrete [min]="0" [max]="3000000000000" [step]="1000000000">
+              <input
+                matSliderStartThumb
+                [ngModel]="marketCapRange()[0]"
+                (ngModelChange)="marketCapRange.set([$event, marketCapRange()[1]])"
+              />
+              <input
+                matSliderEndThumb
+                [ngModel]="marketCapRange()[1]"
+                (ngModelChange)="marketCapRange.set([marketCapRange()[0], $event])"
+              />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- P/E Ratio -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>P/E Ratio</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ peRange()[0] }}</span>
+              <span>{{ peRange()[1] }}</span>
+            </div>
+            <mat-slider discrete [min]="0" [max]="1000" [step]="5">
+              <input matSliderStartThumb [ngModel]="peRange()[0]" (ngModelChange)="peRange.set([$event, peRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="peRange()[1]" (ngModelChange)="peRange.set([peRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Revenue Growth -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Revenue Growth YoY (%)</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ revenueGrowthRange()[0] }}%</span>
+              <span>{{ revenueGrowthRange()[1] }}%</span>
+            </div>
+            <mat-slider discrete [min]="-100" [max]="1000" [step]="5">
+              <input matSliderStartThumb [ngModel]="revenueGrowthRange()[0]" (ngModelChange)="revenueGrowthRange.set([$event, revenueGrowthRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="revenueGrowthRange()[1]" (ngModelChange)="revenueGrowthRange.set([revenueGrowthRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- ROE -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Return on Equity (%)</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ roeRange()[0] }}%</span>
+              <span>{{ roeRange()[1] }}%</span>
+            </div>
+            <mat-slider discrete [min]="-500" [max]="500" [step]="5">
+              <input matSliderStartThumb [ngModel]="roeRange()[0]" (ngModelChange)="roeRange.set([$event, roeRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="roeRange()[1]" (ngModelChange)="roeRange.set([roeRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Dividend Yield -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Dividend Yield (%)</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ dividendYieldRange()[0] }}%</span>
+              <span>{{ dividendYieldRange()[1] }}%</span>
+            </div>
+            <mat-slider discrete [min]="0" [max]="20" [step]="0.5">
+              <input matSliderStartThumb [ngModel]="dividendYieldRange()[0]" (ngModelChange)="dividendYieldRange.set([$event, dividendYieldRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="dividendYieldRange()[1]" (ngModelChange)="dividendYieldRange.set([dividendYieldRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Debt to Equity -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Debt to Equity</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ debtToEquityRange()[0] }}</span>
+              <span>{{ debtToEquityRange()[1] }}</span>
+            </div>
+            <mat-slider discrete [min]="0" [max]="100" [step]="0.5">
+              <input matSliderStartThumb [ngModel]="debtToEquityRange()[0]" (ngModelChange)="debtToEquityRange.set([$event, debtToEquityRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="debtToEquityRange()[1]" (ngModelChange)="debtToEquityRange.set([debtToEquityRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Net Margin -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Net Margin (%)</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="slider-filter">
+            <div class="slider-labels">
+              <span>{{ netMarginRange()[0] }}%</span>
+              <span>{{ netMarginRange()[1] }}%</span>
+            </div>
+            <mat-slider discrete [min]="-100" [max]="100" [step]="1">
+              <input matSliderStartThumb [ngModel]="netMarginRange()[0]" (ngModelChange)="netMarginRange.set([$event, netMarginRange()[1]])" />
+              <input matSliderEndThumb [ngModel]="netMarginRange()[1]" (ngModelChange)="netMarginRange.set([netMarginRange()[0], $event])" />
+            </mat-slider>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Sector -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Sector</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="sector-checkboxes">
+            <mat-checkbox
+              *ngFor="let sector of sectors"
+              [checked]="sector.selected"
+              (change)="sector.selected = $event.checked"
+            >
+              {{ sector.label }}
+            </mat-checkbox>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" (click)="applyFilters()">
+          Apply Filters
+        </button>
+        <button mat-button color="warn" (click)="clearAllFilters()">
+          Clear All
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT PANEL: Results -->
+    <main class="results-panel">
+      <!-- Sort & Count bar -->
+      <div class="results-toolbar">
+        <div class="sort-controls">
+          <mat-form-field appearance="outline" class="sort-field">
+            <mat-label>Sort by</mat-label>
+            <mat-select [value]="store.sort().field" (selectionChange)="onSortFieldChange($event.value)">
+              <mat-option *ngFor="let f of sortFields" [value]="f.field">{{ f.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="sort-dir-field">
+            <mat-label>Order</mat-label>
+            <mat-select [value]="store.sort().direction" (selectionChange)="onSortDirectionChange($event.value)">
+              <mat-option *ngFor="let d of sortDirections" [value]="d.value">{{ d.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="results-count" *ngIf="store.results() !== null">
+          Showing {{ store.results()?.length ?? 0 }} of {{ store.totalElements() | number }} results
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <app-loading-spinner *ngIf="store.loading()" message="Screening stocks..."></app-loading-spinner>
+
+      <!-- Error state -->
+      <div class="error-state" *ngIf="store.error() && !store.loading()">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>{{ store.error() }}</p>
+        <button mat-button color="primary" (click)="applyFilters()">Retry</button>
+      </div>
+
+      <!-- Empty state -->
+      <app-empty-state
+        *ngIf="!store.loading() && !store.error() && store.results() !== null && !store.hasResults()"
+        icon="search_off"
+        title="No Results Found"
+        message="Try adjusting your filter criteria to discover more stocks."
+      >
+      </app-empty-state>
+
+      <!-- Initial state -->
+      <app-empty-state
+        *ngIf="!store.loading() && !store.error() && store.results() === null && store.activeFilterCount() === 0"
+        icon="tune"
+        title="Apply Filters to Get Started"
+        message="Use the filters on the left to find stocks matching your criteria."
+      >
+      </app-empty-state>
+
+      <!-- Results table -->
+      <div class="results-table-container" *ngIf="store.hasResults() && !store.loading()">
+        <table class="screener-table">
+          <thead>
+            <tr>
+              <th *ngFor="let col of columns">{{ col.header }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let item of store.results()"
+              class="result-row"
+              [routerLink]="['/stocks', item.ticker]"
+              role="link"
+              tabindex="0"
+            >
+              <td class="ticker-cell">
+                <strong>{{ item.ticker }}</strong>
+              </td>
+              <td class="name-cell">{{ item.name }}</td>
+              <td>
+                <span class="sector-chip">{{ item.sector }}</span>
+              </td>
+              <td class="number-cell">{{ item.marketCap | bigNumber }}</td>
+              <td class="number-cell">{{ item.peRatio | number:'1.2-2' }}</td>
+              <td class="number-cell" [class.positive]="item.revenueGrowthYoY >= 0" [class.negative]="item.revenueGrowthYoY < 0">
+                {{ item.revenueGrowthYoY | stockPercent }}
+              </td>
+              <td class="number-cell" [class.positive]="item.roe >= 0" [class.negative]="item.roe < 0">
+                {{ item.roe | stockPercent }}
+              </td>
+              <td class="number-cell" [class.positive]="item.dividendYield > 0">
+                {{ item.dividendYield | stockPercent }}
+              </td>
+              <td class="number-cell" [class.positive]="item.netMargin >= 0" [class.negative]="item.netMargin < 0">
+                {{ item.netMargin | stockPercent }}
+              </td>
+              <td class="number-cell">{{ item.debtToEquity | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <mat-paginator
+          [length]="store.totalElements()"
+          [pageSize]="store.pageSize()"
+          [pageIndex]="store.page()"
+          (page)="onPageChange($event)"
+          [pageSizeOptions]="[]"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+      </div>
+    </main>
+  </div>
+</div>

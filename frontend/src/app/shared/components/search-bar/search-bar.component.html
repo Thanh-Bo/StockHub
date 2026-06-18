@@ -1,0 +1,36 @@
+<mat-form-field class="search-field" appearance="outline" subscriptSizing="dynamic">
+  <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <input
+    type="text"
+    matInput
+    placeholder="Search stocks & ETFs..."
+    [formControl]="searchControl"
+    [matAutocomplete]="auto"
+    (keydown.enter)="onEnter()"
+    aria-label="Search stocks"
+  />
+  <button
+    *ngIf="searchControl.value"
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="searchControl.setValue('')"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
+    <mat-option *ngFor="let item of suggestions" [value]="item.ticker">
+      <div class="option-content">
+        <div class="option-left">
+          <span class="option-ticker">{{ item.ticker }}</span>
+          <span class="option-name">{{ item.name }}</span>
+        </div>
+        <mat-chip class="option-sector" highlighted>{{ item.sector }}</mat-chip>
+      </div>
+    </mat-option>
+    <mat-option *ngIf="suggestions.length === 0 && (searchControl.value?.length ?? 0) >= 2" disabled>
+      No results found
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

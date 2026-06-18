@@ -1,0 +1,93 @@
+.company-card {
+  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+.card-content {
+  padding: 16px !important;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-ticker {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.card-name {
+  font-size: 0.8rem;
+  color: #6b7280;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sector-chip {
+  font-size: 0.7rem !important;
+  height: 24px !important;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.price-section {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.price-change {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.positive {
+  color: #22c55e;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.neutral {
+  color: #6b7280;
+}
+
+.market-cap {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}

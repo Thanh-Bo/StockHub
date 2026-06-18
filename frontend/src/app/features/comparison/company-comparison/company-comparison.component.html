@@ -1,0 +1,128 @@
+<div class="comparison-page">
+  <header class="comparison-header">
+    <h1>Company Comparison</h1>
+    <p class="subtitle">Compare up to 5 companies side by side across key financial metrics.</p>
+  </header>
+
+  <!-- Ticker Input -->
+  <mat-card class="ticker-input-card">
+    <mat-card-content>
+      <div class="ticker-chips-section">
+        <mat-chip-grid #chipGrid aria-label="Ticker selection">
+          <mat-chip-row
+            *ngFor="let ticker of tickers(); let i = index"
+            [removable]="true"
+            (removed)="removeTicker(ticker)"
+            [style.--chip-color]="getTickerColor(i)"
+          >
+            <span class="ticker-dot" [style.background-color]="getTickerColor(i)"></span>
+            {{ ticker }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip-row>
+          <input
+            *ngIf="tickers().length < 5"
+            matChipInputFor="chipGrid"
+            [placeholder]="tickers().length === 0 ? 'Type a ticker and press Enter...' : 'Add another ticker...'"
+            [ngModel]="tickerInput()"
+            (ngModelChange)="tickerInput.set($event)"
+            (keydown)="onTickerInputKeydown($event)"
+          />
+        </mat-chip-grid>
+        <span class="ticker-hint">{{ tickers().length }}/5 tickers selected. Min 2 required.</span>
+      </div>
+
+      <div class="compare-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="tickers().length < 2 || loading()"
+          (click)="compare()"
+        >
+          <mat-icon>compare_arrows</mat-icon>
+          Compare
+        </button>
+        <mat-slide-toggle
+          *ngIf="response()"
+          [checked]="showIndustryAverages()"
+          (change)="showIndustryAverages.set($event.checked)"
+          color="accent"
+        >
+          Show Industry Averages
+        </mat-slide-toggle>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading -->
+  <app-loading-spinner *ngIf="loading()" message="Loading comparison data..."></app-loading-spinner>
+
+  <!-- Error -->
+  <div class="error-state" *ngIf="error() && !loading()">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-button color="primary" (click)="compare()">Retry</button>
+  </div>
+
+  <!-- Results -->
+  <ng-container *ngIf="response() as resp">
+    <mat-card class="comparison-table-card" *ngFor="let category of metricCategories">
+      <mat-card-header>
+        <mat-card-title>{{ category.label }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="table-responsive">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="metric-col">Metric</th>
+              <th
+                *ngFor="let company of resp.companies; let i = index"
+                class="company-col"
+                [style.border-bottom-color]="getTickerColor(i)"
+              >
+                <div class="company-header">
+                  <span class="ticker-badge" [style.background-color]="getTickerColor(i)">
+                    {{ company.ticker }}
+                  </span>
+                  <span class="company-name">{{ company.name }}</span>
+                </div>
+              </th>
+              <th
+                *ngIf="showIndustryAverages() && resp.industryAverages"
+                class="industry-col"
+              >
+                Industry Avg
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let metric of category.metrics">
+              <td class="metric-label">{{ metricLabels[metric] || metric }}</td>
+              <td
+                *ngFor="let company of resp.companies"
+                class="metric-value"
+                [class]="getCellClass(resp.companies, company, metric)"
+              >
+                {{ formatMetricValue(metric, getMetricValue(company, metric)) }}
+              </td>
+              <td
+                *ngIf="showIndustryAverages() && resp.industryAverages"
+                class="metric-value industry-avg"
+              >
+                {{ formatMetricValue(metric, getIndustryAvg(metric)) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+
+  <!-- Empty initial state -->
+  <app-empty-state
+    *ngIf="!loading() && !error() && !response()"
+    icon="compare_arrows"
+    title="Compare Companies"
+    message="Enter at least 2 ticker symbols above and click Compare to see side-by-side financial metrics."
+  >
+  </app-empty-state>
+</div>

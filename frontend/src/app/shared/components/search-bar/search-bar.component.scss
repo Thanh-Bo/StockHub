@@ -1,0 +1,44 @@
+.search-field {
+  width: 100%;
+  max-width: 420px;
+}
+
+.search-icon {
+  color: #9ca3af;
+  margin-right: 4px;
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
+.option-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.option-ticker {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.option-name {
+  font-size: 0.75rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-sector {
+  font-size: 0.65rem !important;
+  height: 22px !important;
+  flex-shrink: 0;
+}

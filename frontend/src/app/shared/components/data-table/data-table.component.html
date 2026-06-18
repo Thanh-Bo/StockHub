@@ -1,0 +1,35 @@
+<div class="table-container">
+  <div class="loading-overlay" *ngIf="loading">
+    <mat-spinner diameter="40" />
+  </div>
+
+  <table
+    mat-table
+    [dataSource]="data"
+    matSort
+    [matSortActive]="sortable ? columns[0]?.field : ''"
+    matSortDirection="asc"
+    (matSortChange)="onSortChange($event)"
+    class="data-table"
+  >
+    <ng-container *ngFor="let col of columns" [matColumnDef]="col.field">
+      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="col.field" [disabled]="!sortable">
+        {{ col.header }}
+      </th>
+      <td mat-cell *matCellDef="let row" [attr.align]="col.align || 'left'">
+        {{ getCellValue(row, col) }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <tr class="mat-row empty-row" *matNoDataRow>
+      <td [attr.colspan]="columns.length" class="empty-cell">
+        <ng-container *ngIf="!loading">
+          No data available
+        </ng-container>
+      </td>
+    </tr>
+  </table>
+</div>

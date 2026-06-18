@@ -1,0 +1,33 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+*.log
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+bin/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+*.js.map
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar.gz
+
+# IDE
+.vscode/
+.idea/

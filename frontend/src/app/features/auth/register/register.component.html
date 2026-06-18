@@ -1,0 +1,73 @@
+<div class="register-container">
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-card-title class="register-title">Create Account</mat-card-title>
+      <mat-card-subtitle class="register-subtitle">Join StockHub to track your investments</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="name-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" placeholder="John" autocomplete="given-name" />
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="f['firstName'].hasError('required')">First name is required</mat-error>
+            <mat-error *ngIf="f['firstName'].hasError('maxlength')">Max 50 characters</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" placeholder="Doe" autocomplete="family-name" />
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <mat-error *ngIf="f['lastName'].hasError('required')">Last name is required</mat-error>
+            <mat-error *ngIf="f['lastName'].hasError('maxlength')">Max 50 characters</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="you@example.com" autocomplete="email" />
+          <mat-icon matPrefix>mail</mat-icon>
+          <mat-error *ngIf="f['email'].hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="f['email'].hasError('email')">Please enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password" />
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>At least 8 characters</mat-hint>
+          <mat-error *ngIf="f['password'].hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="f['password'].hasError('minlength')">Password must be at least 8 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" autocomplete="new-password" />
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword" tabindex="-1">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="f['confirmPassword'].hasError('required')">Please confirm your password</mat-error>
+          <mat-error *ngIf="f['confirmPassword'].hasError('passwordsMismatch')">Passwords do not match</mat-error>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="submit-btn full-width" [disabled]="submitting">
+          <app-loading-spinner *ngIf="submitting" [diameter]="20" />
+          <span *ngIf="!submitting">Create Account</span>
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-footer>
+      <p class="footer-text">
+        Already have an account?
+        <a routerLink="/auth/login" class="login-link">Sign in</a>
+      </p>
+    </mat-card-footer>
+  </mat-card>
+</div>

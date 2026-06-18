@@ -1,0 +1,68 @@
+<div class="search-results-container">
+  <!-- Search Query Header -->
+  <div class="search-header" *ngIf="query">
+    <h2 class="search-title">Search results for "{{ query }}"</h2>
+    <p class="result-count" *ngIf="!loading">
+      {{ results.length }} {{ results.length === 1 ? 'company' : 'companies' }} found
+    </p>
+  </div>
+
+  <!-- Trending Header -->
+  <div class="search-header" *ngIf="!query && !loading">
+    <h2 class="search-title">Trending Searches</h2>
+    <p class="result-count">Popular stocks on StockHub right now</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="loading">
+    <app-loading-spinner [diameter]="48" message="Searching..." />
+  </div>
+
+  <!-- Error State -->
+  <div class="error-section" *ngIf="error && !loading">
+    <app-empty-state
+      icon="error_outline"
+      title="Something went wrong"
+      [message]="error"
+      actionLabel="Retry"
+      (action)="retry()"
+    />
+  </div>
+
+  <!-- Empty Results (with query) -->
+  <div class="empty-section" *ngIf="!loading && !error && query && results.length === 0">
+    <app-empty-state
+      icon="search_off"
+      title="No Results"
+      message="We couldn't find any companies matching '{{ query }}'. Try a different ticker or company name."
+      actionLabel="Browse Trending"
+      (action)="loadTrending()"
+    />
+  </div>
+
+  <!-- Trending Results (no query) -->
+  <div class="results-grid" *ngIf="!loading && !error && !query">
+    <app-company-card
+      *ngFor="let result of trendingResults"
+      [ticker]="result.ticker"
+      [name]="result.name"
+      [sector]="result.sector"
+      [marketCap]="result.marketCap"
+      [price]="result.price"
+      [priceChangePercent]="result.priceChangePercent"
+    />
+  </div>
+
+  <!-- Search Results Grid -->
+  <div class="results-grid" *ngIf="!loading && !error && query">
+    <app-company-card
+      *ngFor="let result of results"
+      [ticker]="result.ticker"
+      [name]="result.name"
+      [sector]="result.sector"
+      [marketCap]="result.marketCap"
+      [price]="result.price"
+      [priceChangePercent]="result.priceChangePercent"
+    />
+  </div>
+</div>

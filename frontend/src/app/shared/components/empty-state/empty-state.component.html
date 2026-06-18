@@ -1,0 +1,13 @@
+<div class="empty-state">
+  <mat-icon class="empty-icon">{{ icon }}</mat-icon>
+  <h3 class="empty-title" *ngIf="title">{{ title }}</h3>
+  <p class="empty-message" *ngIf="message">{{ message }}</p>
+  <button
+    *ngIf="actionLabel"
+    mat-flat-button
+    color="primary"
+    (click)="action.emit()"
+  >
+    {{ actionLabel }}
+  </button>
+</div>

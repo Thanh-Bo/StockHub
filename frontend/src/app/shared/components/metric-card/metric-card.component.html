@@ -1,0 +1,28 @@
+<mat-card class="metric-card" [class.trend-up]="trend === 'up'" [class.trend-down]="trend === 'down'">
+  <mat-card-content class="metric-content">
+    <div class="metric-header">
+      <span class="metric-label">{{ label }}</span>
+      <mat-icon
+        *ngIf="tooltip"
+        class="tooltip-icon"
+        [matTooltip]="tooltip"
+        matTooltipPosition="above"
+      >
+        info_outline
+      </mat-icon>
+    </div>
+    <div class="metric-value">
+      <span>{{ formattedValue }}</span>
+      <mat-icon
+        *ngIf="trend !== 'neutral'"
+        class="trend-icon"
+        [ngClass]="{
+          'trend-up': trend === 'up',
+          'trend-down': trend === 'down'
+        }"
+      >
+        {{ trendIcon }}
+      </mat-icon>
+    </div>
+  </mat-card-content>
+</mat-card>
