@@ -79,7 +79,7 @@ export class SearchResultsComponent implements OnInit {
       });
   }
 
-  private loadTrending(): void {
+  loadTrending(): void {
     this.loading = true;
     this.error = null;
 

@@ -9,15 +9,10 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '@app/core/services/auth.service';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
+import { SnackbarService } from '@app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-register',
@@ -26,14 +21,8 @@ import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
     LoadingSpinnerComponent,
+    AppIconComponent,
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
@@ -42,7 +31,7 @@ export class RegisterComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackbar = inject(SnackbarService);
 
   registerForm!: FormGroup;
   submitting = false;
@@ -95,10 +84,7 @@ export class RegisterComponent implements OnInit {
             err?.error?.message ??
             err?.message ??
             'Registration failed. Please try again.';
-          this.snackBar.open(message, 'Close', {
-            duration: 5000,
-            panelClass: ['error-snackbar'],
-          });
+          this.snackbar.open(message, 'Close', { duration: 5000, type: 'error' });
         },
       });
   }

@@ -1,27 +1,19 @@
-import { Component, inject, OnInit, OnDestroy, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { WatchlistStore } from '../store/watchlist.store';
 import { WatchlistDetail, WatchlistStockSummary } from '../models/watchlist.models';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '@app/shared/components/empty-state/empty-state.component';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
 import { BigNumberPipe } from '@app/shared/pipes/big-number.pipe';
 import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
+import { SnackbarService } from '@app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-watchlist-detail',
@@ -30,19 +22,10 @@ import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
     CommonModule,
     FormsModule,
     RouterModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatChipsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatAutocompleteModule,
-    MatTooltipModule,
-    MatSnackBarModule,
     DragDropModule,
     LoadingSpinnerComponent,
     EmptyStateComponent,
+    AppIconComponent,
     BigNumberPipe,
     StockPercentPipe,
   ],
@@ -51,8 +34,7 @@ import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
 })
 export class WatchlistDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(SnackbarService);
   private readonly http = inject(HttpClient);
   readonly store = inject(WatchlistStore);
 
@@ -64,8 +46,9 @@ export class WatchlistDetailComponent implements OnInit, OnDestroy {
   readonly addStockTicker = signal('');
   readonly autocompleteOptions = signal<{ ticker: string; name: string }[]>([]);
   readonly autocompleteLoading = signal(false);
+  showAutocomplete = false;
 
-  private watchlistId: number | null = null;
+  watchlistId: number | null = null;
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
@@ -129,6 +112,7 @@ export class WatchlistDetailComponent implements OnInit, OnDestroy {
         next: (results) => {
           this.autocompleteOptions.set(results);
           this.autocompleteLoading.set(false);
+          this.showAutocomplete = true;
         },
         error: () => {
           this.autocompleteOptions.set([]);
@@ -137,9 +121,16 @@ export class WatchlistDetailComponent implements OnInit, OnDestroy {
       });
   }
 
+  hideAutocomplete(): void {
+    setTimeout(() => {
+      this.showAutocomplete = false;
+    }, 150);
+  }
+
   selectAutocompleteOption(option: { ticker: string; name: string }): void {
     this.addStockTicker.set(option.ticker);
     this.autocompleteOptions.set([]);
+    this.showAutocomplete = false;
   }
 
   addStock(): void {

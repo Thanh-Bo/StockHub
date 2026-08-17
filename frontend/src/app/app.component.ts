@@ -1,12 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
 import { SearchBarComponent } from './shared/components/search-bar/search-bar.component';
+import { AppIconComponent } from './shared/components/app-icon/app-icon.component';
+import { SnackbarContainerComponent } from './shared/components/snackbar-container/snackbar-container.component';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -16,12 +13,9 @@ import { AuthService } from './core/services/auth.service';
     CommonModule,
     RouterOutlet,
     RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
     SearchBarComponent,
+    AppIconComponent,
+    SnackbarContainerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -32,6 +26,7 @@ export class AppComponent implements OnInit {
 
   isLoggedIn = false;
   userDisplayName = '';
+  menuOpen = false;
   currentYear = new Date().getFullYear();
 
   ngOnInit(): void {

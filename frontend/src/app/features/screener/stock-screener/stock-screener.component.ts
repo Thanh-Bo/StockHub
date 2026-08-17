@@ -2,24 +2,19 @@ import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSliderModule } from '@angular/material/slider';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ScreenerStore } from '../store/screener.store';
 import { ScreenerResultItem, FilterCriteria, SortConfig } from '../models/screener.models';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '@app/shared/components/empty-state/empty-state.component';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
 import { BigNumberPipe } from '@app/shared/pipes/big-number.pipe';
 import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
+
+interface PageEvent {
+  pageIndex: number;
+  pageSize: number;
+  length: number;
+}
 
 @Component({
   selector: 'app-stock-screener',
@@ -28,20 +23,9 @@ import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
     CommonModule,
     FormsModule,
     RouterModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatSliderModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatExpansionModule,
-    MatPaginatorModule,
-    MatBadgeModule,
-    MatChipsModule,
-    MatTooltipModule,
     LoadingSpinnerComponent,
     EmptyStateComponent,
+    AppIconComponent,
     BigNumberPipe,
     StockPercentPipe,
   ],
@@ -206,6 +190,58 @@ export class StockScreenerComponent implements OnInit {
     this.store.search();
   }
 
+  clampMin(key: string, value: number): void {
+    const min = Math.min(value, this.rangeMax(key));
+    switch (key) {
+      case 'marketCap': this.marketCapRange.set([min, this.marketCapRange()[1]]); break;
+      case 'pe': this.peRange.set([min, this.peRange()[1]]); break;
+      case 'revenueGrowth': this.revenueGrowthRange.set([min, this.revenueGrowthRange()[1]]); break;
+      case 'dividendYield': this.dividendYieldRange.set([min, this.dividendYieldRange()[1]]); break;
+      case 'roe': this.roeRange.set([min, this.roeRange()[1]]); break;
+      case 'debtToEquity': this.debtToEquityRange.set([min, this.debtToEquityRange()[1]]); break;
+      case 'netMargin': this.netMarginRange.set([min, this.netMarginRange()[1]]); break;
+    }
+  }
+
+  clampMax(key: string, value: number): void {
+    const max = Math.max(value, this.rangeMin(key));
+    switch (key) {
+      case 'marketCap': this.marketCapRange.set([this.marketCapRange()[0], max]); break;
+      case 'pe': this.peRange.set([this.peRange()[0], max]); break;
+      case 'revenueGrowth': this.revenueGrowthRange.set([this.revenueGrowthRange()[0], max]); break;
+      case 'dividendYield': this.dividendYieldRange.set([this.dividendYieldRange()[0], max]); break;
+      case 'roe': this.roeRange.set([this.roeRange()[0], max]); break;
+      case 'debtToEquity': this.debtToEquityRange.set([this.debtToEquityRange()[0], max]); break;
+      case 'netMargin': this.netMarginRange.set([this.netMarginRange()[0], max]); break;
+    }
+  }
+
+  private rangeMin(key: string): number {
+    switch (key) {
+      case 'marketCap': return this.marketCapRange()[0];
+      case 'pe': return this.peRange()[0];
+      case 'revenueGrowth': return this.revenueGrowthRange()[0];
+      case 'dividendYield': return this.dividendYieldRange()[0];
+      case 'roe': return this.roeRange()[0];
+      case 'debtToEquity': return this.debtToEquityRange()[0];
+      case 'netMargin': return this.netMarginRange()[0];
+      default: return 0;
+    }
+  }
+
+  private rangeMax(key: string): number {
+    switch (key) {
+      case 'marketCap': return this.marketCapRange()[1];
+      case 'pe': return this.peRange()[1];
+      case 'revenueGrowth': return this.revenueGrowthRange()[1];
+      case 'dividendYield': return this.dividendYieldRange()[1];
+      case 'roe': return this.roeRange()[1];
+      case 'debtToEquity': return this.debtToEquityRange()[1];
+      case 'netMargin': return this.netMarginRange()[1];
+      default: return 100;
+    }
+  }
+
   onSortFieldChange(field: string): void {
     const currentSort = this.store.sort();
     this.store.setSort({ field, direction: currentSort.direction });
@@ -222,7 +258,6 @@ export class StockScreenerComponent implements OnInit {
     this.store.setPage(event.pageIndex);
     this.store.search();
   }
-
   getMarketCapSliderLabel(value: number): string {
     if (value >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
     if (value >= 1e9) return `$${(value / 1e9).toFixed(0)}B`;

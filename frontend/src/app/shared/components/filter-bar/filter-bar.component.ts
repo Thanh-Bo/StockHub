@@ -8,27 +8,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSliderModule } from '@angular/material/slider';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { FilterConfig, FilterOption } from '../../models/shared.models';
+import { AppIconComponent } from '../app-icon/app-icon.component';
 
 @Component({
   selector: 'app-filter-bar',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatChipsModule,
-    MatMenuModule,
-    MatSliderModule,
-    MatCheckboxModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, FormsModule, AppIconComponent],
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./filter-bar.component.scss'],
 })
@@ -37,11 +23,16 @@ export class FilterBarComponent implements OnChanges {
   @Output() filterChange = new EventEmitter<Record<string, any>>();
 
   filterValues: Record<string, any> = {};
+  openMenuIndex: number | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filters']) {
       this.initializeFilterValues();
     }
+  }
+
+  toggleMenu(index: number): void {
+    this.openMenuIndex = this.openMenuIndex === index ? null : index;
   }
 
   onRangeChange(field: string, value: number): void {

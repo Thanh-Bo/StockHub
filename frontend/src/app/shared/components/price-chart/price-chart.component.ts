@@ -11,8 +11,6 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType, ChartOptions } from 'chart.js';
 import {
@@ -28,6 +26,7 @@ import {
   Legend,
 } from 'chart.js';
 import { PricePoint } from '../../models/shared.models';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 Chart.register(
   LineController,
@@ -44,7 +43,7 @@ Chart.register(
 @Component({
   selector: 'app-price-chart',
   standalone: true,
-  imports: [CommonModule, MatButtonToggleModule, MatProgressSpinnerModule, BaseChartDirective],
+  imports: [CommonModule, BaseChartDirective, LoadingSpinnerComponent],
   templateUrl: './price-chart.component.html',
   styleUrls: ['./price-chart.component.scss'],
 })
@@ -59,7 +58,7 @@ export class PriceChartComponent implements OnChanges, AfterViewInit {
 
   ranges: string[] = ['1M', '3M', '6M', '1Y', '5Y', 'MAX'];
 
-  lineChartType: ChartType = 'line';
+  lineChartType: 'line' = 'line';
 
   lineChartData: ChartData<'line'> = {
     labels: [],

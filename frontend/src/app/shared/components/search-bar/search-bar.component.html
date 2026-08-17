@@ -1,36 +1,53 @@
-<mat-form-field class="search-field" appearance="outline" subscriptSizing="dynamic">
-  <mat-icon matPrefix class="search-icon">search</mat-icon>
-  <input
-    type="text"
-    matInput
-    placeholder="Search stocks & ETFs..."
-    [formControl]="searchControl"
-    [matAutocomplete]="auto"
-    (keydown.enter)="onEnter()"
-    aria-label="Search stocks"
-  />
-  <button
-    *ngIf="searchControl.value"
-    matSuffix
-    mat-icon-button
-    aria-label="Clear"
-    (click)="searchControl.setValue('')"
-  >
-    <mat-icon>close</mat-icon>
-  </button>
+<div class="relative w-full">
+  <div class="relative">
+    <app-icon
+      name="search"
+      [size]="18"
+      class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+    />
+    <input
+      type="text"
+      class="input pl-10 pr-10"
+      placeholder="Search stocks & ETFs..."
+      [formControl]="searchControl"
+      (keydown.enter)="onEnter()"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      aria-label="Search stocks"
+    />
+    <button
+      *ngIf="searchControl.value"
+      type="button"
+      class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-gray-400 transition hover:text-gray-600"
+      aria-label="Clear"
+      (mousedown.prevent)="searchControl.setValue('')"
+    >
+      <app-icon name="close" [size]="16" />
+    </button>
+  </div>
 
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
-    <mat-option *ngFor="let item of suggestions" [value]="item.ticker">
-      <div class="option-content">
-        <div class="option-left">
-          <span class="option-ticker">{{ item.ticker }}</span>
-          <span class="option-name">{{ item.name }}</span>
-        </div>
-        <mat-chip class="option-sector" highlighted>{{ item.sector }}</mat-chip>
-      </div>
-    </mat-option>
-    <mat-option *ngIf="suggestions.length === 0 && (searchControl.value?.length ?? 0) >= 2" disabled>
-      No results found
-    </mat-option>
-  </mat-autocomplete>
-</mat-form-field>
+  <div
+    *ngIf="showDropdown && (searchControl.value?.length ?? 0) >= 2"
+    class="absolute z-40 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+  >
+    <ul class="max-h-72 overflow-y-auto py-1">
+      <li
+        *ngFor="let item of suggestions"
+        class="flex cursor-pointer items-center justify-between gap-3 px-3 py-2 transition-colors hover:bg-gray-50"
+        role="option"
+        (mousedown.prevent)="selectSuggestion(item)"
+      >
+        <span class="min-w-0">
+          <span class="block text-sm font-semibold text-gray-900">{{ item.ticker }}</span>
+          <span class="block truncate text-xs text-gray-500">{{ item.name }}</span>
+        </span>
+        <span class="shrink-0 rounded-full bg-[#1a73e8]/10 px-2 py-0.5 text-xs font-medium text-[#115293]">
+          {{ item.sector }}
+        </span>
+      </li>
+      <li *ngIf="suggestions.length === 0" class="px-3 py-2 text-sm text-gray-500">
+        No results found
+      </li>
+    </ul>
+  </div>
+</div>

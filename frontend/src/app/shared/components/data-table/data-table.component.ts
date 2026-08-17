@@ -1,14 +1,17 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ColumnDef } from '../../models/shared.models';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+
+export interface TableSort {
+  active: string;
+  direction: 'asc' | 'desc' | '';
+}
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule, MatProgressSpinnerModule],
+  imports: [CommonModule, LoadingSpinnerComponent],
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.scss'],
 })
@@ -18,14 +21,28 @@ export class DataTableComponent {
   @Input() sortable: boolean = true;
   @Input() loading: boolean = false;
 
-  @Output() sortChange = new EventEmitter<Sort>();
+  @Output() sortChange = new EventEmitter<TableSort>();
+
+  activeSort: string = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
 
   get displayedColumns(): string[] {
     return this.columns.map((col) => col.field);
   }
 
-  onSortChange(sort: Sort): void {
-    this.sortChange.emit(sort);
+  onHeaderClick(field: string): void {
+    if (!this.sortable) return;
+    if (this.activeSort !== field) {
+      this.activeSort = field;
+      this.sortDirection = 'asc';
+    } else {
+      this.sortDirection =
+        this.sortDirection === 'asc' ? 'desc' : this.sortDirection === 'desc' ? '' : 'asc';
+      if (this.sortDirection === '') {
+        this.activeSort = '';
+      }
+    }
+    this.sortChange.emit({ active: this.activeSort, direction: this.sortDirection });
   }
 
   getCellValue(row: any, column: ColumnDef): string | number {

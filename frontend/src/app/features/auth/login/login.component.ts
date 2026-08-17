@@ -2,16 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '@app/core/services/auth.service';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
+import { SnackbarService } from '@app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-login',
@@ -20,15 +14,8 @@ import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
     LoadingSpinnerComponent,
+    AppIconComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -37,7 +24,7 @@ export class LoginComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackbar = inject(SnackbarService);
 
   loginForm!: FormGroup;
   submitting = false;
@@ -72,10 +59,7 @@ export class LoginComponent implements OnInit {
         this.submitting = false;
         const message =
           err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
-        this.snackBar.open(message, 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar'],
-        });
+        this.snackbar.open(message, 'Close', { duration: 5000, type: 'error' });
       },
     });
   }

@@ -1,35 +1,46 @@
-<div class="table-container">
-  <div class="loading-overlay" *ngIf="loading">
-    <mat-spinner diameter="40" />
+<div class="relative overflow-hidden rounded-lg border border-gray-200 bg-white">
+  <div *ngIf="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
+    <app-loading-spinner [diameter]="40" />
   </div>
 
-  <table
-    mat-table
-    [dataSource]="data"
-    matSort
-    [matSortActive]="sortable ? columns[0]?.field : ''"
-    matSortDirection="asc"
-    (matSortChange)="onSortChange($event)"
-    class="data-table"
-  >
-    <ng-container *ngFor="let col of columns" [matColumnDef]="col.field">
-      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="col.field" [disabled]="!sortable">
-        {{ col.header }}
-      </th>
-      <td mat-cell *matCellDef="let row" [attr.align]="col.align || 'left'">
-        {{ getCellValue(row, col) }}
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-    <tr class="mat-row empty-row" *matNoDataRow>
-      <td [attr.colspan]="columns.length" class="empty-cell">
-        <ng-container *ngIf="!loading">
-          No data available
-        </ng-container>
-      </td>
-    </tr>
-  </table>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-full text-left text-sm">
+      <thead class="sticky top-0 z-[1] bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+        <tr>
+          <th
+            *ngFor="let col of columns"
+            scope="col"
+            class="whitespace-nowrap px-4 py-3 font-medium"
+            [class.cursor-pointer]="sortable"
+            [class.cursor-default]="!sortable"
+            (click)="onHeaderClick(col.field)"
+          >
+            <span class="inline-flex items-center gap-1 select-none">
+              {{ col.header }}
+              <span *ngIf="sortable && activeSort === col.field" class="text-[#1a73e8]">
+                {{ sortDirection === 'asc' ? '↑' : sortDirection === 'desc' ? '↓' : '' }}
+              </span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let row of data" class="transition-colors hover:bg-gray-50">
+          <td
+            *ngFor="let col of columns"
+            class="whitespace-nowrap px-4 py-3 tabular-nums text-gray-700"
+            [class.text-right]="col.align === 'right'"
+            [class.text-center]="col.align === 'center'"
+          >
+            {{ getCellValue(row, col) }}
+          </td>
+        </tr>
+        <tr *ngIf="!loading && data.length === 0">
+          <td [attr.colspan]="columns.length" class="px-4 py-10 text-center text-sm text-gray-500">
+            No data available
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

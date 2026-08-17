@@ -1,71 +1,100 @@
 <div class="financials-container">
   <!-- Header -->
-  <div class="financials-header">
-    <div class="header-left">
-      <h2 class="page-title">Financial Statements</h2>
-      <span class="ticker-badge">{{ ticker }}</span>
-    </div>
+  <div class="mb-4 flex items-center gap-2">
+    <h2 class="text-xl font-bold text-gray-900">Financial Statements</h2>
+    <span class="rounded-md bg-gray-100 px-2 py-0.5 text-sm font-medium text-gray-600">{{ ticker }}</span>
   </div>
 
   <!-- Controls -->
-  <mat-card class="controls-card">
-    <mat-card-content>
-      <div class="controls-row">
-        <div class="control-group">
-          <span class="control-label">Statement</span>
-          <mat-button-toggle-group
-            [value]="statementType"
-            (change)="onStatementTypeChange($event.value)"
-            class="control-toggle"
-          >
-            <mat-button-toggle value="income">Income Statement</mat-button-toggle>
-            <mat-button-toggle value="balance">Balance Sheet</mat-button-toggle>
-            <mat-button-toggle value="cashflow">Cash Flow</mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        <div class="control-group">
-          <span class="control-label">Period</span>
-          <mat-button-toggle-group
-            [value]="period"
-            (change)="onPeriodChange($event.value)"
-            class="control-toggle"
-          >
-            <mat-button-toggle value="ANNUAL">Annual</mat-button-toggle>
-            <mat-button-toggle value="QUARTERLY">Quarterly</mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        <div class="control-group">
-          <span class="control-label">Range</span>
-          <mat-form-field appearance="outline" class="years-select">
-            <mat-select [value]="selectedYears" (selectionChange)="onYearsChange($event.value)">
-              <mat-option [value]="3">3 Years</mat-option>
-              <mat-option [value]="5">5 Years</mat-option>
-              <mat-option [value]="10">10 Years</mat-option>
-            </mat-select>
-          </mat-form-field>
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div class="flex flex-wrap items-center gap-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm font-medium text-gray-600">Statement</span>
+        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium transition"
+            [class.bg-[#1a73e8]]="statementType === 'income'"
+            [class.text-white]="statementType === 'income'"
+            [class.text-gray-600]="statementType !== 'income'"
+            (click)="onStatementTypeChange('income')"
+          >Income Statement</button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium transition"
+            [class.bg-[#1a73e8]]="statementType === 'balance'"
+            [class.text-white]="statementType === 'balance'"
+            [class.text-gray-600]="statementType !== 'balance'"
+            (click)="onStatementTypeChange('balance')"
+          >Balance Sheet</button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium transition"
+            [class.bg-[#1a73e8]]="statementType === 'cashflow'"
+            [class.text-white]="statementType === 'cashflow'"
+            [class.text-gray-600]="statementType !== 'cashflow'"
+            (click)="onStatementTypeChange('cashflow')"
+          >Cash Flow</button>
         </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm font-medium text-gray-600">Period</span>
+        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium transition"
+            [class.bg-[#1a73e8]]="period === 'ANNUAL'"
+            [class.text-white]="period === 'ANNUAL'"
+            [class.text-gray-600]="period !== 'ANNUAL'"
+            (click)="onPeriodChange('ANNUAL')"
+          >Annual</button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1 text-sm font-medium transition"
+            [class.bg-[#1a73e8]]="period === 'QUARTERLY'"
+            [class.text-white]="period === 'QUARTERLY'"
+            [class.text-gray-600]="period !== 'QUARTERLY'"
+            (click)="onPeriodChange('QUARTERLY')"
+          >Quarterly</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-medium text-gray-600">Range</span>
+        <select
+          class="input w-auto"
+          [value]="selectedYears"
+          (change)="onYearsChange(+($any($event.target).value))"
+        >
+          <option [value]="3">3 Years</option>
+          <option [value]="5">5 Years</option>
+          <option [value]="10">10 Years</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
   <!-- Statement Title -->
-  <div class="statement-header">
-    <h3 class="statement-title">
+  <div class="mb-4 flex flex-wrap items-center gap-3">
+    <h3 class="text-lg font-semibold text-gray-900">
       {{ statementType === 'income' ? 'Income Statement' : statementType === 'balance' ? 'Balance Sheet' : 'Cash Flow Statement' }}
-      <span class="period-badge">{{ period === 'ANNUAL' ? 'Annual' : 'Quarterly' }}</span>
+      <span class="ml-2 rounded-full bg-[#1a73e8]/10 px-2.5 py-0.5 text-xs font-medium text-[#115293]">
+        {{ period === 'ANNUAL' ? 'Annual' : 'Quarterly' }}
+      </span>
     </h3>
-    <span class="range-badge">Last {{ selectedYears }} years</span>
+    <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      Last {{ selectedYears }} years
+    </span>
   </div>
 
   <!-- Loading State -->
-  <div class="loading-section" *ngIf="loading">
+  <div class="py-10" *ngIf="loading">
     <app-loading-spinner [diameter]="48" message="Loading financial data..." />
   </div>
 
   <!-- Error State -->
-  <div class="error-section" *ngIf="error && !loading">
+  <div *ngIf="error && !loading">
     <app-empty-state
       icon="error_outline"
       title="Failed to Load Data"
@@ -76,21 +105,19 @@
   </div>
 
   <!-- Data Table -->
-  <mat-card class="data-card" *ngIf="!loading && !error && data.length > 0">
-    <mat-card-content>
-      <app-data-table
-        [columns]="columns"
-        [data]="data"
-        [sortable]="true"
-        [loading]="false"
-      />
-    </mat-card-content>
-  </mat-card>
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm" *ngIf="!loading && !error && data.length > 0">
+    <app-data-table
+      [columns]="columns"
+      [data]="data"
+      [sortable]="true"
+      [loading]="false"
+    />
+  </div>
 
   <!-- Empty State -->
-  <div class="empty-section" *ngIf="!loading && !error && data.length === 0">
+  <div *ngIf="!loading && !error && data.length === 0">
     <app-empty-state
-      icon="insert_chart_outlined"
+      icon="chart"
       title="No Data Available"
       message="Financial statements are not available for the selected criteria."
     />

@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { BigNumberPipe } from '../../pipes/big-number.pipe';
 import { StockPercentPipe } from '../../pipes/percent.pipe';
@@ -13,8 +11,6 @@ import { TickerFormatPipe } from '../../pipes/ticker-format.pipe';
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
-    MatChipsModule,
     BigNumberPipe,
     StockPercentPipe,
     TickerFormatPipe,

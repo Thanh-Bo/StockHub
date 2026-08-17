@@ -9,11 +9,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatOptionModule } from '@angular/material/core';
 import { HttpClient } from '@angular/common/http';
 import {
   debounceTime,
@@ -27,21 +22,12 @@ import {
 import { Subject } from 'rxjs';
 import { environment } from '@env/environment';
 import { AutocompleteResult } from '../../models/shared.models';
+import { AppIconComponent } from '../app-icon/app-icon.component';
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    MatAutocompleteModule,
-    MatInputModule,
-    MatIconModule,
-    MatChipsModule,
-    MatOptionModule,
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, AppIconComponent],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
@@ -51,6 +37,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
   searchControl = new FormControl<string>('');
   suggestions: AutocompleteResult[] = [];
+  showDropdown = false;
   @Output() search = new EventEmitter<string>();
 
   private readonly destroy$ = new Subject<void>();
@@ -67,6 +54,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       )
       .subscribe((results) => {
         this.suggestions = results;
+        this.showDropdown = true;
       });
   }
 
@@ -75,11 +63,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onOptionSelected(event: any): void {
-    const ticker = event.option.value;
-    if (ticker) {
-      this.router.navigate(['/stocks', ticker]);
+  onFocus(): void {
+    this.showDropdown = true;
+  }
+
+  onBlur(): void {
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 150);
+  }
+
+  selectSuggestion(item: AutocompleteResult): void {
+    if (item.ticker) {
+      this.router.navigate(['/stocks', item.ticker]);
       this.searchControl.setValue('');
+      this.showDropdown = false;
     }
   }
 
@@ -89,13 +87,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       this.search.emit(query);
       this.router.navigate(['/search'], { queryParams: { q: query } });
       this.searchControl.setValue('');
+      this.showDropdown = false;
     }
-  }
-
-  displayFn(result: AutocompleteResult | string): string {
-    if (!result) return '';
-    if (typeof result === 'string') return result;
-    return result.ticker;
   }
 
   private autocomplete(query: string): Observable<AutocompleteResult[]> {

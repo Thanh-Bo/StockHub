@@ -1,28 +1,28 @@
-<mat-card class="metric-card" [class.trend-up]="trend === 'up'" [class.trend-down]="trend === 'down'">
-  <mat-card-content class="metric-content">
-    <div class="metric-header">
-      <span class="metric-label">{{ label }}</span>
-      <mat-icon
-        *ngIf="tooltip"
-        class="tooltip-icon"
-        [matTooltip]="tooltip"
-        matTooltipPosition="above"
-      >
-        info_outline
-      </mat-icon>
-    </div>
-    <div class="metric-value">
-      <span>{{ formattedValue }}</span>
-      <mat-icon
-        *ngIf="trend !== 'neutral'"
-        class="trend-icon"
-        [ngClass]="{
-          'trend-up': trend === 'up',
-          'trend-down': trend === 'down'
-        }"
-      >
-        {{ trendIcon }}
-      </mat-icon>
-    </div>
-  </mat-card-content>
-</mat-card>
+<div
+  class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition"
+  [class.border-t-4]="trend !== 'neutral'"
+  [class.border-t-green-500]="trend === 'up'"
+  [class.border-t-red-500]="trend === 'down'"
+>
+  <div class="flex items-center justify-between gap-2">
+    <span class="truncate text-sm font-medium text-gray-500">{{ label }}</span>
+    <app-icon
+      *ngIf="tooltip"
+      name="info"
+      [size]="14"
+      class="shrink-0 cursor-help text-gray-400"
+      [attr.title]="tooltip"
+    />
+  </div>
+  <div class="mt-2 flex items-center gap-2">
+    <span class="text-2xl font-semibold tabular-nums text-gray-900">{{ formattedValue }}</span>
+    <app-icon
+      *ngIf="trend !== 'neutral'"
+      [name]="trendIcon"
+      [size]="18"
+      class="shrink-0"
+      [class.text-green-500]="trend === 'up'"
+      [class.text-red-500]="trend === 'down'"
+    />
+  </div>
+</div>

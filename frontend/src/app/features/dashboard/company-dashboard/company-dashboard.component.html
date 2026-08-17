@@ -18,60 +18,59 @@
   <!-- Dashboard Content -->
   <ng-container *ngIf="store.data()">
     <!-- Company Header Section -->
-    <section class="company-header">
-      <div class="header-main">
-        <div class="header-left">
-          <div class="company-logo-placeholder">
-            <span class="logo-text">{{ store.ticker() | slice:0:2 }}</span>
+    <section class="mb-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-[#1a73e8]/10 font-bold text-[#1a73e8]">
+            <span>{{ store.ticker() | slice:0:2 }}</span>
           </div>
-          <div class="company-info">
-            <div class="company-name-row">
-              <h1 class="company-name">{{ store.name() }}</h1>
-              <span class="ticker-badge">{{ store.ticker() }}</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-2xl font-bold text-gray-900">{{ store.name() }}</h1>
+              <span class="rounded-md bg-gray-100 px-2 py-0.5 text-sm font-medium text-gray-600">{{ store.ticker() }}</span>
             </div>
-            <div class="price-row">
-              <span class="current-price">{{ store.currentPrice() | currency:'USD':'symbol':'1.2-2' }}</span>
-              <span class="price-change" [style.color]="store.priceChangeColor()">
-                <mat-icon class="change-icon">{{ store.priceChange() >= 0 ? 'arrow_drop_up' : 'arrow_drop_down' }}</mat-icon>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="text-2xl font-semibold tabular-nums text-gray-900">
+                {{ store.currentPrice() | currency:'USD':'symbol':'1.2-2' }}
+              </span>
+              <span class="flex items-center gap-0.5 text-sm font-medium" [style.color]="store.priceChangeColor()">
+                <app-icon name="arrow_drop_up" [size]="18" *ngIf="store.priceChange() >= 0" />
+                <app-icon name="arrow_drop_down" [size]="18" *ngIf="store.priceChange() < 0" />
                 {{ store.priceChange() | currency:'USD':'symbol':'1.2-2' }}
                 ({{ store.priceChangePercent() | stockPercent:2 }})
               </span>
             </div>
-            <div class="badge-row">
-              <mat-chip class="sector-chip" *ngIf="store.sector()">{{ store.sector() }}</mat-chip>
-              <mat-chip class="industry-chip" *ngIf="store.industry()">{{ store.industry() }}</mat-chip>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span *ngIf="store.sector()" class="rounded-full bg-[#1a73e8]/10 px-2.5 py-0.5 text-xs font-medium text-[#115293]">{{ store.sector() }}</span>
+              <span *ngIf="store.industry()" class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">{{ store.industry() }}</span>
             </div>
           </div>
         </div>
-        <div class="header-actions">
-          <button mat-stroked-button color="primary" (click)="onAddToWatchlist()">
-            <mat-icon>add</mat-icon>
-            Add to Watchlist
-          </button>
-        </div>
+        <button class="btn btn-outline" (click)="onAddToWatchlist()">
+          <app-icon name="add" [size]="16" />
+          Add to Watchlist
+        </button>
       </div>
     </section>
 
     <!-- Price Chart Section -->
-    <section class="price-chart-section">
-      <mat-card class="chart-card">
-        <mat-card-content>
-          <app-price-chart
-            *ngIf="store.priceHistory().length > 0"
-            [data]="store.priceHistory()"
-            [loading]="store.loading()"
-          />
-          <div class="chart-empty" *ngIf="store.priceHistory().length === 0">
-            <p>No price history available</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
+    <section class="mb-6">
+      <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <app-price-chart
+          *ngIf="store.priceHistory().length > 0"
+          [priceHistory]="store.priceHistory()"
+          [loading]="store.loading()"
+        />
+        <div *ngIf="store.priceHistory().length === 0" class="py-8 text-center text-sm text-gray-500">
+          <p>No price history available</p>
+        </div>
+      </div>
     </section>
 
     <!-- Metrics Grid -->
-    <section class="metrics-section">
-      <h3 class="section-title">Key Metrics</h3>
-      <div class="metrics-grid">
+    <section class="mb-6">
+      <h3 class="mb-3 text-lg font-semibold text-gray-900">Key Metrics</h3>
+      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <app-metric-card
           *ngFor="let metric of store.keyMetrics()"
           [label]="metric.label"
@@ -84,13 +83,26 @@
     </section>
 
     <!-- Tabs Section -->
-    <section class="tabs-section">
-      <mat-card class="tabs-card">
-        <mat-card-content>
-          <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex" animationDuration="200ms">
-            <!-- Overview Tab -->
-            <mat-tab label="Overview">
-              <div class="tab-content">
+    <section>
+      <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="flex gap-1 border-b border-gray-200 px-4 pt-3">
+          <button
+            *ngFor="let tab of tabLabels; let i = index"
+            type="button"
+            class="-mb-px rounded-t-md border-b-2 px-4 py-2 text-sm font-medium transition-colors"
+            [class.border-[#1a73e8]]="selectedTabIndex === i"
+            [class.text-[#1a73e8]]="selectedTabIndex === i"
+            [class.border-transparent]="selectedTabIndex !== i"
+            [class.text-gray-500]="selectedTabIndex !== i"
+            [class.hover:text-gray-800]="selectedTabIndex !== i"
+            (click)="onTabChange(i)"
+          >
+            {{ tab }}
+          </button>
+        </div>
+        <div class="p-5">
+          <!-- Overview Tab -->
+          <div *ngIf="selectedTabIndex === 0" class="tab-content">
                 <div class="overview-grid">
                   <div class="overview-description">
                     <h4 class="subsection-title">About {{ store.name() }}</h4>
@@ -138,27 +150,40 @@
                   <span class="data-source">Data source: {{ store.dataSource() || 'N/A' }}</span>
                   <span class="last-updated">Last updated: {{ store.lastUpdated() | date:'medium' }}</span>
                 </div>
-              </div>
-            </mat-tab>
+            </div>
 
             <!-- Financials Tab -->
-            <mat-tab label="Financials">
-              <div class="tab-content">
-                <div class="financials-controls">
-                  <mat-button-toggle-group [value]="period" (change)="onPeriodChange($event.value)" class="period-toggle">
-                    <mat-button-toggle value="ANNUAL">Annual</mat-button-toggle>
-                    <mat-button-toggle value="QUARTERLY">Quarterly</mat-button-toggle>
-                  </mat-button-toggle-group>
-
-                  <mat-form-field appearance="outline" class="years-select">
-                    <mat-label>Years</mat-label>
-                    <mat-select [value]="selectedYears" (selectionChange)="onYearsChange($event.value)">
-                      <mat-option [value]="3">3 Years</mat-option>
-                      <mat-option [value]="5">5 Years</mat-option>
-                      <mat-option [value]="10">10 Years</mat-option>
-                    </mat-select>
-                  </mat-form-field>
+            <div *ngIf="selectedTabIndex === 1" class="tab-content">
+              <div class="mb-4 flex flex-wrap items-center gap-3">
+                <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5">
+                  <button
+                    type="button"
+                    class="rounded-md px-3 py-1 text-sm font-medium transition"
+                    [class.bg-[#1a73e8]]="period === 'ANNUAL'"
+                    [class.text-white]="period === 'ANNUAL'"
+                    [class.text-gray-600]="period !== 'ANNUAL'"
+                    (click)="onPeriodChange('ANNUAL')"
+                  >Annual</button>
+                  <button
+                    type="button"
+                    class="rounded-md px-3 py-1 text-sm font-medium transition"
+                    [class.bg-[#1a73e8]]="period === 'QUARTERLY'"
+                    [class.text-white]="period === 'QUARTERLY'"
+                    [class.text-gray-600]="period !== 'QUARTERLY'"
+                    (click)="onPeriodChange('QUARTERLY')"
+                  >Quarterly</button>
                 </div>
+
+                <select
+                  class="input w-auto"
+                  [value]="selectedYears"
+                  (change)="onYearsChange(+($any($event.target).value))"
+                >
+                  <option [value]="3">3 Years</option>
+                  <option [value]="5">5 Years</option>
+                  <option [value]="10">10 Years</option>
+                </select>
+              </div>
 
                 <app-loading-spinner *ngIf="financialStatementsLoading" [diameter]="36" message="Loading financials..." />
 
@@ -172,16 +197,14 @@
 
                 <app-empty-state
                   *ngIf="!financialStatementsLoading && financialStatements.length === 0"
-                  icon="insert_chart_outlined"
+                  icon="chart"
                   title="No Financial Data"
                   message="Financial statements are not available for this company."
                 />
-              </div>
-            </mat-tab>
+            </div>
 
             <!-- Metrics Tab -->
-            <mat-tab label="Metrics">
-              <div class="tab-content">
+            <div *ngIf="selectedTabIndex === 2" class="tab-content">
                 <div class="metrics-detail">
                   <h4 class="subsection-title">Profitability</h4>
                   <div class="metric-bars">
@@ -299,11 +322,9 @@
                   </div>
                 </div>
               </div>
-            </mat-tab>
 
             <!-- Peers Tab -->
-            <mat-tab label="Peers">
-              <div class="tab-content">
+            <div *ngIf="selectedTabIndex === 3" class="tab-content">
                 <app-loading-spinner *ngIf="peersLoading" [diameter]="36" message="Loading peers..." />
 
                 <app-data-table
@@ -316,15 +337,13 @@
 
                 <app-empty-state
                   *ngIf="!peersLoading && peers.length === 0"
-                  icon="groups"
+                  icon="users"
                   title="No Peer Data"
                   message="Peer comparison data is not available for this company."
                 />
               </div>
-            </mat-tab>
-          </mat-tab-group>
-        </mat-card-content>
-      </mat-card>
+          </div>
+        </div>
     </section>
   </ng-container>
 </div>

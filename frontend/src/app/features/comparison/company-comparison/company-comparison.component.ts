@@ -1,15 +1,6 @@
-import { Component, inject, OnInit, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ComparisonService } from '../services/comparison.service';
 import {
   ComparisonResponse,
@@ -17,8 +8,8 @@ import {
 } from '../models/comparison.models';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '@app/shared/components/empty-state/empty-state.component';
-import { BigNumberPipe } from '@app/shared/pipes/big-number.pipe';
-import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
+import { SnackbarService } from '@app/shared/services/snackbar.service';
 import { finalize } from 'rxjs';
 
 interface MetricCategory {
@@ -33,26 +24,16 @@ interface MetricCategory {
   imports: [
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatChipsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatSnackBarModule,
     LoadingSpinnerComponent,
     EmptyStateComponent,
-    BigNumberPipe,
-    StockPercentPipe,
+    AppIconComponent,
   ],
   templateUrl: './company-comparison.component.html',
   styleUrls: ['./company-comparison.component.scss'],
 })
 export class CompanyComparisonComponent implements OnInit {
   private readonly comparisonService = inject(ComparisonService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(SnackbarService);
 
   readonly tickers = signal<string[]>([]);
   readonly tickerInput = signal('');

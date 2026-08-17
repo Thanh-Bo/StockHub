@@ -1,0 +1,52 @@
+# ============================================================
+# LOCAL DEVELOPMENT PROFILE
+# No Docker, no TimescaleDB (not available on Windows)
+# Uses Hibernate DDL auto-create instead of Flyway
+# Redis is optional (app degrades gracefully without it)
+# ============================================================
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stockhub
+    username: postgres
+    password: 123
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: false
+
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 2
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+
+server:
+  port: 8080
+
+stockhub:
+  ingestion:
+    enabled: false
+  cors:
+    allowed-origins: http://localhost:4200
+
+logging:
+  level:
+    com.stockhub: DEBUG
+    org.hibernate.SQL: WARN

@@ -1,57 +1,67 @@
 <div class="watchlist-list-page">
-  <header class="watchlist-header">
-    <div class="header-left">
-      <h1>My Watchlists</h1>
-      <span class="watchlist-count" *ngIf="store.watchlists().length">
+  <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <h1 class="text-2xl font-bold text-gray-900">My Watchlists</h1>
+      <span *ngIf="store.watchlists().length" class="rounded-full bg-gray-100 px-2.5 py-0.5 text-sm font-medium text-gray-600">
         {{ store.watchlists().length }} watchlist{{ store.watchlists().length !== 1 ? 's' : '' }}
       </span>
     </div>
-    <button
-      mat-raised-button
-      color="primary"
-      *ngIf="!showCreateForm()"
-      (click)="openCreateForm()"
-    >
-      <mat-icon>add</mat-icon>
+    <button class="btn btn-primary" *ngIf="!showCreateForm()" (click)="openCreateForm()">
+      <app-icon name="add" [size]="16" />
       Create Watchlist
     </button>
   </header>
 
   <!-- Create Form (Inline) -->
-  <mat-card class="create-form-card" *ngIf="showCreateForm()">
-    <mat-card-content>
-      <h3>Create New Watchlist</h3>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Watchlist Name</mat-label>
-        <input matInput [(ngModel)]="newWatchlistName" placeholder="e.g., Tech Giants" maxlength="100" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description (optional)</mat-label>
-        <textarea matInput [(ngModel)]="newWatchlistDesc" placeholder="A brief description..." rows="2" maxlength="500"></textarea>
-      </mat-form-field>
-      <div class="form-actions">
-        <button mat-raised-button color="primary" (click)="createWatchlist()" [disabled]="!newWatchlistName().trim()">
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm" *ngIf="showCreateForm()">
+    <h3 class="mb-4 text-base font-semibold text-gray-900">Create New Watchlist</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="label" for="wl-name">Watchlist Name</label>
+        <input
+          id="wl-name"
+          class="input"
+          [(ngModel)]="newWatchlistName"
+          placeholder="e.g., Tech Giants"
+          maxlength="100"
+        />
+      </div>
+      <div>
+        <label class="label" for="wl-desc">Description (optional)</label>
+        <textarea
+          id="wl-desc"
+          class="input"
+          [(ngModel)]="newWatchlistDesc"
+          placeholder="A brief description..."
+          rows="2"
+          maxlength="500"
+        ></textarea>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button class="btn btn-primary" (click)="createWatchlist()" [disabled]="!newWatchlistName().trim()">
           Create
         </button>
-        <button mat-button (click)="cancelCreate()">Cancel</button>
+        <button class="btn btn-ghost" (click)="cancelCreate()">Cancel</button>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 
   <!-- Loading -->
-  <app-loading-spinner *ngIf="store.loading()" message="Loading watchlists..."></app-loading-spinner>
+  <div *ngIf="store.loading()" class="py-10">
+    <app-loading-spinner message="Loading watchlists..."></app-loading-spinner>
+  </div>
 
   <!-- Error -->
-  <div class="error-state" *ngIf="store.error() && !store.loading()">
-    <mat-icon color="warn">error_outline</mat-icon>
-    <p>{{ store.error() }}</p>
-    <button mat-button color="primary" (click)="store.loadWatchlists()">Retry</button>
+  <div *ngIf="store.error() && !store.loading()" class="flex flex-col items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-6 py-10 text-center">
+    <app-icon name="error_outline" [size]="32" class="text-red-600" />
+    <p class="text-sm text-red-800">{{ store.error() }}</p>
+    <button class="btn btn-outline" (click)="store.loadWatchlists()">Retry</button>
   </div>
 
   <!-- Empty State -->
   <app-empty-state
     *ngIf="!store.loading() && !store.error() && !store.hasWatchlists()"
-    icon="bookmark_border"
+    icon="bookmark"
     title="No Watchlists Yet"
     message="Create your first watchlist to track stocks you care about."
     actionLabel="Create Watchlist"
@@ -60,51 +70,45 @@
   </app-empty-state>
 
   <!-- Watchlist Grid -->
-  <div class="watchlist-grid" *ngIf="store.hasWatchlists() && !store.loading()">
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" *ngIf="store.hasWatchlists() && !store.loading()">
     <a
-      class="watchlist-card-link"
+      class="block rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-[#1a73e8]/40 hover:shadow-md"
       *ngFor="let wl of store.watchlists()"
       [routerLink]="['/watchlists', wl.id]"
     >
-      <mat-card class="watchlist-card" matRipple>
-        <mat-card-content>
-          <div class="card-top">
-            <div class="card-info">
-              <h3 class="card-name">
-                {{ wl.name }}
-                <span class="default-badge" *ngIf="wl.isDefault">Default</span>
-              </h3>
-              <p class="card-desc" *ngIf="wl.description">{{ wl.description }}</p>
-            </div>
-            <button
-              mat-icon-button
-              color="warn"
-              class="delete-btn"
-              (click)="deleteWatchlist($event, wl)"
-              matTooltip="Delete watchlist"
-            >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </div>
-          <div class="card-meta">
-            <mat-chip-set>
-              <mat-chip class="stock-count-chip">
-                <mat-icon matChipAvatar>trending_up</mat-icon>
-                {{ wl.stockCount }} stock{{ wl.stockCount !== 1 ? 's' : '' }}
-              </mat-chip>
-              <mat-chip class="date-chip">
-                Created {{ wl.createdAt | date:'mediumDate' }}
-              </mat-chip>
-            </mat-chip-set>
-          </div>
-        </mat-card-content>
-        <mat-card-actions align="end">
-          <button mat-button color="primary" [routerLink]="['/watchlists', wl.id]">
-            View Details
-            <mat-icon>arrow_forward</mat-icon>
-          </button>
-        </mat-card-actions>
-      </mat-card>
+      <div class="flex items-start justify-between gap-3 p-5">
+        <div class="min-w-0">
+          <h3 class="truncate text-base font-semibold text-gray-900">
+            {{ wl.name }}
+            <span *ngIf="wl.isDefault" class="ml-1 rounded-full bg-[#1a73e8]/10 px-2 py-0.5 text-xs font-medium text-[#115293]">Default</span>
+          </h3>
+          <p *ngIf="wl.description" class="mt-1 line-clamp-2 text-sm text-gray-500">{{ wl.description }}</p>
+        </div>
+        <button
+          type="button"
+          class="btn-icon shrink-0 text-red-500 hover:bg-red-50 hover:text-red-600"
+          (click)="deleteWatchlist($event, wl)"
+          title="Delete watchlist"
+          aria-label="Delete watchlist"
+        >
+          <app-icon name="delete_outline" [size]="18" />
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 px-5 pb-4">
+        <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+          <app-icon name="trending_up" [size]="14" />
+          {{ wl.stockCount }} stock{{ wl.stockCount !== 1 ? 's' : '' }}
+        </span>
+        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+          Created {{ wl.createdAt | date:'mediumDate' }}
+        </span>
+      </div>
+      <div class="flex justify-end border-t border-gray-100 px-5 py-3">
+        <button type="button" class="btn btn-ghost text-[#1a73e8]" [routerLink]="['/watchlists', wl.id]">
+          View Details
+          <app-icon name="arrow_right" [size]="16" />
+        </button>
+      </div>
     </a>
   </div>
 </div>

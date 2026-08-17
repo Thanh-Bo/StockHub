@@ -2,6 +2,42 @@
    StockHub Global Styles
    ============================================================ */
 
+/* Tailwind CSS v4 */
+@use "tailwindcss";
+
+/* --- Reusable Tailwind-based component classes --- */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply bg-[#1a73e8] text-white hover:bg-[#115293];
+}
+
+.btn-outline {
+  @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.btn-ghost {
+  @apply text-gray-600 hover:bg-gray-100;
+}
+
+.btn-icon {
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800;
+}
+
+.input {
+  @apply w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-[#1a73e8] focus:outline-none focus:ring-2 focus:ring-[#1a73e8]/20;
+}
+
+.label {
+  @apply mb-1 block text-sm font-medium text-gray-700;
+}
+
 /* --- CSS Custom Properties (Theme Tokens) --- */
 :root {
   /* Primary palette */

@@ -1,20 +1,24 @@
-<div class="chart-wrapper">
-  <div class="chart-header">
-    <mat-button-toggle-group
-      [value]="range"
-      (change)="onRangeSelect($event.value)"
-      class="range-selector"
-      hideSingleSelectionIndicator
-    >
-      <mat-button-toggle *ngFor="let r of ranges" [value]="r">
+<div class="w-full">
+  <div class="flex items-center justify-between">
+    <div class="inline-flex rounded-lg border border-gray-200 bg-white p-0.5">
+      <button
+        *ngFor="let r of ranges"
+        type="button"
+        class="rounded-md px-3 py-1 text-xs font-medium transition"
+        [class.bg-[#1a73e8]]="range === r"
+        [class.text-white]="range === r"
+        [class.text-gray-600]="range !== r"
+        [class.hover:bg-gray-100]="range !== r"
+        (click)="onRangeSelect(r)"
+      >
         {{ r }}
-      </mat-button-toggle>
-    </mat-button-toggle-group>
+      </button>
+    </div>
   </div>
 
-  <div class="chart-container" [class.loading]="loading">
-    <div class="loading-overlay" *ngIf="loading">
-      <mat-spinner diameter="36" />
+  <div class="relative mt-3 h-64 w-full" [class.opacity-60]="loading">
+    <div *ngIf="loading" class="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70">
+      <app-loading-spinner [diameter]="36" />
     </div>
     <canvas
       baseChart

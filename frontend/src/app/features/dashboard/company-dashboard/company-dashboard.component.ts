@@ -1,17 +1,7 @@
-import { Component, inject, OnInit, OnDestroy, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject, takeUntil } from 'rxjs';
 import { DashboardStore } from '../store/dashboard.store';
 import { DashboardService } from '../services/dashboard.service';
@@ -21,9 +11,11 @@ import { PriceChartComponent } from '@app/shared/components/price-chart/price-ch
 import { DataTableComponent } from '@app/shared/components/data-table/data-table.component';
 import { LoadingSpinnerComponent } from '@app/shared/components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '@app/shared/components/empty-state/empty-state.component';
+import { AppIconComponent } from '@app/shared/components/app-icon/app-icon.component';
 import { BigNumberPipe } from '@app/shared/pipes/big-number.pipe';
 import { StockPercentPipe } from '@app/shared/pipes/percent.pipe';
 import { ColumnDef } from '@app/shared/models/shared.models';
+import { SnackbarService } from '@app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-company-dashboard',
@@ -32,21 +24,12 @@ import { ColumnDef } from '@app/shared/models/shared.models';
     CommonModule,
     RouterModule,
     FormsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatTabsModule,
-    MatDividerModule,
-    MatButtonToggleModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatSnackBarModule,
     MetricCardComponent,
     PriceChartComponent,
     DataTableComponent,
     LoadingSpinnerComponent,
     EmptyStateComponent,
+    AppIconComponent,
     BigNumberPipe,
     StockPercentPipe,
   ],
@@ -55,7 +38,7 @@ import { ColumnDef } from '@app/shared/models/shared.models';
 })
 export class CompanyDashboardComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(SnackbarService);
   private readonly dashboardService = inject(DashboardService);
   readonly store = inject(DashboardStore);
 
@@ -75,6 +58,7 @@ export class CompanyDashboardComponent implements OnInit, OnDestroy {
 
   // Tab index
   selectedTabIndex = 0;
+  readonly tabLabels = ['Overview', 'Financials', 'Metrics', 'Peers'];
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {

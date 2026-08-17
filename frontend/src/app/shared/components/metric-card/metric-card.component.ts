@@ -1,28 +1,26 @@
 import { Component, Input } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
+import { AppIconComponent } from '../app-icon/app-icon.component';
 import { BigNumberPipe } from '../../pipes/big-number.pipe';
 import { StockPercentPipe } from '../../pipes/percent.pipe';
 
 @Component({
   selector: 'app-metric-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatTooltipModule, BigNumberPipe, StockPercentPipe],
+  imports: [CommonModule, AppIconComponent],
   templateUrl: './metric-card.component.html',
   styleUrls: ['./metric-card.component.scss'],
 })
 export class MetricCardComponent {
   @Input() label: string = '';
-  @Input() value: number | string = 0;
-  @Input() format: 'bigNumber' | 'percent' | 'decimal' = 'decimal';
-  @Input() trend: 'up' | 'down' | 'neutral' = 'neutral';
+  @Input() value: number | string | null = 0;
+  @Input() format: string = 'decimal';
+  @Input() trend?: 'up' | 'down' | 'neutral';
   @Input() tooltip: string = '';
 
   get formattedValue(): string {
     const num = typeof this.value === 'string' ? parseFloat(this.value) : this.value;
-    if (isNaN(num)) {
+    if (num == null || isNaN(num)) {
       return String(this.value);
     }
     switch (this.format) {

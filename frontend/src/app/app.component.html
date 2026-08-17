@@ -1,79 +1,97 @@
-<mat-toolbar class="app-toolbar" color="primary">
-  <!-- Logo -->
-  <a class="logo" routerLink="/" aria-label="StockHub Home">
-    <mat-icon class="logo-icon">trending_up</mat-icon>
-    <span class="logo-text">StockHub</span>
-  </a>
+<header class="sticky top-0 z-50 border-b border-gray-200 bg-white">
+  <div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
+    <!-- Logo -->
+    <a class="flex shrink-0 items-center gap-2" routerLink="/" aria-label="StockHub Home">
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1a73e8] text-white">
+        <app-icon name="trending_up" [size]="18" />
+      </span>
+      <span class="text-lg font-bold text-gray-900">StockHub</span>
+    </a>
 
-  <!-- Global Search -->
-  <div class="search-wrapper">
-    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    <!-- Global Search -->
+    <div class="hidden min-w-0 flex-1 max-w-xl md:block">
+      <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    </div>
+
+    <div class="flex-1 md:hidden"></div>
+
+    <!-- Navigation Links -->
+    <nav class="flex items-center gap-1">
+      <a class="btn btn-ghost" routerLink="/screener" routerLinkActive="text-[#1a73e8]">
+        <app-icon name="filter_list" [size]="16" />
+        <span class="hidden lg:inline">Screener</span>
+      </a>
+      <a class="btn btn-ghost" routerLink="/compare" routerLinkActive="text-[#1a73e8]">
+        <app-icon name="compare" [size]="16" />
+        <span class="hidden lg:inline">Compare</span>
+      </a>
+      <a class="btn btn-ghost" routerLink="/watchlists" routerLinkActive="text-[#1a73e8]">
+        <app-icon name="bookmark" [size]="16" />
+        <span class="hidden lg:inline">Watchlists</span>
+      </a>
+    </nav>
+
+    <!-- Auth Section -->
+    <div class="flex shrink-0 items-center gap-2">
+      <ng-container *ngIf="!isLoggedIn; else userMenu">
+        <button class="btn btn-ghost" (click)="login()">Login</button>
+        <button class="btn btn-primary" (click)="register()">Sign Up</button>
+      </ng-container>
+
+      <ng-template #userMenu>
+        <div class="relative">
+          <button class="btn btn-ghost" (click)="menuOpen = !menuOpen">
+            <app-icon name="account_circle" [size]="18" />
+            <span class="max-w-[10rem] truncate">{{ userDisplayName }}</span>
+            <app-icon name="arrow_drop_down" [size]="16" />
+          </button>
+
+          <div
+            *ngIf="menuOpen"
+            class="absolute right-0 z-50 mt-1 w-52 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+          >
+            <button
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+              (click)="goToWatchlists(); menuOpen = false"
+            >
+              <app-icon name="bookmark" [size]="16" />
+              My Watchlists
+            </button>
+            <hr class="my-1 border-gray-100" />
+            <button
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+              (click)="logout()"
+            >
+              <app-icon name="logout" [size]="16" />
+              Logout
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
   </div>
-
-  <span class="toolbar-spacer"></span>
-
-  <!-- Navigation Links -->
-  <nav class="nav-links">
-    <a mat-button routerLink="/screener" routerLinkActive="active-link">
-      <mat-icon>filter_list</mat-icon>
-      <span>Screener</span>
-    </a>
-    <a mat-button routerLink="/compare" routerLinkActive="active-link">
-      <mat-icon>compare</mat-icon>
-      <span>Compare</span>
-    </a>
-    <a mat-button routerLink="/watchlists" routerLinkActive="active-link">
-      <mat-icon>bookmark</mat-icon>
-      <span>Watchlists</span>
-    </a>
-  </nav>
-
-  <!-- Auth Section -->
-  <div class="auth-section">
-    <ng-container *ngIf="!isLoggedIn; else userMenu">
-      <button mat-button (click)="login()">Login</button>
-      <button mat-flat-button color="accent" (click)="register()">Sign Up</button>
-    </ng-container>
-
-    <ng-template #userMenu>
-      <button mat-button [matMenuTriggerFor]="menu" class="user-btn">
-        <mat-icon>account_circle</mat-icon>
-        <span class="user-name">{{ userDisplayName }}</span>
-        <mat-icon>arrow_drop_down</mat-icon>
-      </button>
-
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="goToWatchlists()">
-          <mat-icon>bookmark</mat-icon>
-          <span>My Watchlists</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
-        </button>
-      </mat-menu>
-    </ng-template>
-  </div>
-</mat-toolbar>
+</header>
 
 <!-- Main Content -->
-<main class="main-content">
+<main class="mx-auto max-w-7xl px-4 py-6">
   <router-outlet></router-outlet>
 </main>
 
 <!-- Footer -->
-<footer class="app-footer">
-  <div class="footer-content">
-    <div class="footer-brand">
-      <mat-icon>trending_up</mat-icon>
-      <span>StockHub</span>
+<footer class="border-t border-gray-200 bg-white">
+  <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 sm:flex-row">
+    <div class="flex items-center gap-2 text-gray-700">
+      <app-icon name="trending_up" [size]="18" class="text-[#1a73e8]" />
+      <span class="font-semibold">StockHub</span>
     </div>
-    <p class="footer-copy">&copy; {{ currentYear }} StockHub. All rights reserved.</p>
-    <div class="footer-links">
-      <a routerLink="/screener">Screener</a>
-      <a routerLink="/compare">Compare</a>
-      <a routerLink="/search">Search</a>
+    <p class="text-sm text-gray-500">&copy; {{ currentYear }} StockHub. All rights reserved.</p>
+    <div class="flex gap-4 text-sm text-gray-500">
+      <a routerLink="/screener" class="transition-colors hover:text-gray-800">Screener</a>
+      <a routerLink="/compare" class="transition-colors hover:text-gray-800">Compare</a>
+      <a routerLink="/search" class="transition-colors hover:text-gray-800">Search</a>
     </div>
   </div>
 </footer>
+
+<!-- Toast notifications -->
+<app-snackbar-container />

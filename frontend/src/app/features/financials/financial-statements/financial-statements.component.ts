@@ -2,10 +2,6 @@ import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { Subject, takeUntil } from 'rxjs';
 import { FinancialsService } from '../services/financials.service';
 import { FinancialStatementRow } from '../../dashboard/models/dashboard.models';
@@ -23,10 +19,6 @@ type PeriodType = 'ANNUAL' | 'QUARTERLY';
   imports: [
     CommonModule,
     FormsModule,
-    MatCardModule,
-    MatButtonToggleModule,
-    MatSelectModule,
-    MatFormFieldModule,
     DataTableComponent,
     LoadingSpinnerComponent,
     EmptyStateComponent,

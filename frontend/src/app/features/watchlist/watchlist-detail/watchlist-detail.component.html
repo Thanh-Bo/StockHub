@@ -1,12 +1,14 @@
 <div class="watchlist-detail-page">
   <!-- Loading -->
-  <app-loading-spinner *ngIf="store.loading() && !store.selectedWatchlist()" message="Loading watchlist..."></app-loading-spinner>
+  <div *ngIf="store.loading() && !store.selectedWatchlist()" class="py-10">
+    <app-loading-spinner message="Loading watchlist..."></app-loading-spinner>
+  </div>
 
   <!-- Error -->
-  <div class="error-state" *ngIf="store.error() && !store.selectedWatchlist()">
-    <mat-icon color="warn">error_outline</mat-icon>
-    <p>{{ store.error() }}</p>
-    <button mat-button color="primary" (click)="store.selectWatchlist(watchlistId!)" *ngIf="watchlistId">
+  <div *ngIf="store.error() && !store.selectedWatchlist()" class="flex flex-col items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-6 py-10 text-center">
+    <app-icon name="error_outline" [size]="32" class="text-red-600" />
+    <p class="text-sm text-red-800">{{ store.error() }}</p>
+    <button class="btn btn-outline" (click)="store.selectWatchlist(watchlistId!)" *ngIf="watchlistId">
       Retry
     </button>
   </div>
@@ -14,84 +16,90 @@
   <!-- Content -->
   <ng-container *ngIf="store.selectedWatchlist() as detail">
     <!-- Header -->
-    <header class="detail-header">
-      <div class="header-top">
-        <a mat-icon-button routerLink="/watchlists" matTooltip="Back to watchlists">
-          <mat-icon>arrow_back</mat-icon>
+    <header class="mb-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <a class="btn-icon" routerLink="/watchlists" title="Back to watchlists">
+          <app-icon name="arrow_back" [size]="20" />
         </a>
-        <div class="header-title" *ngIf="!editingName()">
-          <h1>{{ detail.name }}</h1>
-          <button mat-icon-button (click)="startEditName()" matTooltip="Edit name">
-            <mat-icon>edit</mat-icon>
+        <div *ngIf="!editingName()" class="flex items-center gap-2">
+          <h1 class="text-2xl font-bold text-gray-900">{{ detail.name }}</h1>
+          <button type="button" class="btn-icon" (click)="startEditName()" title="Edit name">
+            <app-icon name="edit" [size]="18" />
           </button>
         </div>
-        <div class="header-title editing" *ngIf="editingName()">
-          <mat-form-field appearance="outline" class="edit-name-field">
-            <input matInput [(ngModel)]="editNameValue" (keydown.enter)="saveName()" (keydown.escape)="cancelEditName()" />
-          </mat-form-field>
-          <button mat-icon-button color="primary" (click)="saveName()" matTooltip="Save">
-            <mat-icon>check</mat-icon>
+        <div *ngIf="editingName()" class="flex items-center gap-2">
+          <input
+            class="input w-64"
+            [(ngModel)]="editNameValue"
+            (keydown.enter)="saveName()"
+            (keydown.escape)="cancelEditName()"
+          />
+          <button type="button" class="btn btn-primary px-3 py-1.5" (click)="saveName()">
+            <app-icon name="check" [size]="16" />
           </button>
-          <button mat-icon-button (click)="cancelEditName()" matTooltip="Cancel">
-            <mat-icon>close</mat-icon>
+          <button type="button" class="btn-icon" (click)="cancelEditName()">
+            <app-icon name="close" [size]="18" />
           </button>
         </div>
       </div>
-      <p class="header-desc" *ngIf="detail.description">{{ detail.description }}</p>
-      <div class="header-actions">
-        <button mat-raised-button color="primary" (click)="toggleAddStock()">
-          <mat-icon>{{ showAddStock() ? 'close' : 'add' }}</mat-icon>
+      <p class="mt-2 text-sm text-gray-500" *ngIf="detail.description">{{ detail.description }}</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button class="btn btn-primary" (click)="toggleAddStock()">
+          <app-icon [name]="showAddStock() ? 'close' : 'add'" [size]="16" />
           {{ showAddStock() ? 'Cancel' : 'Add Stock' }}
         </button>
-        <button mat-stroked-button color="warn" (click)="deleteWatchlist()">
-          <mat-icon>delete_outline</mat-icon>
+        <button class="btn btn-outline text-red-600" (click)="deleteWatchlist()">
+          <app-icon name="delete_outline" [size]="16" />
           Delete
         </button>
       </div>
     </header>
 
     <!-- Add Stock Form -->
-    <mat-card class="add-stock-card" *ngIf="showAddStock()">
-      <mat-card-content>
-        <div class="add-stock-form">
-          <mat-form-field appearance="outline" class="ticker-field">
-            <mat-label>Ticker Symbol</mat-label>
-            <input
-              matInput
-              [matAutocomplete]="auto"
-              [(ngModel)]="addStockTicker"
-              (ngModelChange)="onTickerInputChange($event)"
-              (keydown.enter)="addStock()"
-              placeholder="e.g., AAPL"
-            />
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectAutocompleteOption($event.option.value)">
-              <mat-option *ngFor="let opt of autocompleteOptions()" [value]="opt">
-                <span class="autocomplete-ticker">{{ opt.ticker }}</span>
-                <span class="autocomplete-name">{{ opt.name }}</span>
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="addStock()"
-            [disabled]="!addStockTicker().trim() || store.loading()"
+    <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm" *ngIf="showAddStock()">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="relative min-w-0 flex-1">
+          <input
+            class="input"
+            [(ngModel)]="addStockTicker"
+            (ngModelChange)="onTickerInputChange($event)"
+            (keydown.enter)="addStock()"
+            placeholder="e.g., AAPL"
+            (focus)="showAutocomplete = true"
+            (blur)="hideAutocomplete()"
+            aria-label="Ticker symbol"
+          />
+          <div
+            *ngIf="showAutocomplete && autocompleteOptions().length > 0"
+            class="absolute z-40 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
           >
-            Add
-          </button>
+            <ul class="max-h-56 overflow-y-auto py-1">
+              <li
+                *ngFor="let opt of autocompleteOptions()"
+                class="flex cursor-pointer items-center justify-between gap-3 px-3 py-2 text-sm transition-colors hover:bg-gray-50"
+                (mousedown.prevent)="selectAutocompleteOption(opt)"
+              >
+                <span class="font-semibold text-gray-900">{{ opt.ticker }}</span>
+                <span class="truncate text-gray-500">{{ opt.name }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
-      </mat-card-content>
-    </mat-card>
+        <button class="btn btn-primary" (click)="addStock()" [disabled]="!addStockTicker().trim() || store.loading()">
+          Add
+        </button>
+      </div>
+    </div>
 
     <!-- Stock count -->
-    <div class="stock-count-bar" *ngIf="detail.stocks.length > 0">
+    <div class="mb-3 text-sm text-gray-500" *ngIf="detail.stocks.length > 0">
       {{ detail.stocks.length }} stock{{ detail.stocks.length !== 1 ? 's' : '' }}
     </div>
 
     <!-- Empty watchlist -->
     <app-empty-state
       *ngIf="detail.stocks.length === 0"
-      icon="show_chart"
+      icon="chart"
       title="No Stocks Yet"
       message="Add your first stock to this watchlist to start tracking."
       actionLabel="Add Stock"
@@ -101,59 +109,60 @@
 
     <!-- Stock list with drag & drop -->
     <div
-      class="stock-list"
+      class="space-y-2"
       cdkDropList
       [cdkDropListData]="detail.stocks"
       (cdkDropListDropped)="dropStock($event)"
       *ngIf="detail.stocks.length > 0"
     >
       <div
-        class="stock-row"
-        *ngFor="let stock of detail.stocks; let i = index"
+        class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+        *ngFor="let stock of detail.stocks"
         cdkDrag
         [cdkDragData]="stock"
       >
         <!-- Drag handle -->
-        <div class="drag-handle" cdkDragHandle>
-          <mat-icon>drag_indicator</mat-icon>
+        <div class="cursor-grab text-gray-400 active:cursor-grabbing" cdkDragHandle>
+          <app-icon name="menu" [size]="18" />
         </div>
 
         <!-- Stock info (clickable to navigate) -->
-        <a class="stock-info" [routerLink]="['/stocks', stock.ticker]">
-          <div class="stock-ticker-name">
-            <strong class="stock-ticker">{{ stock.ticker }}</strong>
-            <span class="stock-name">{{ stock.name }}</span>
+        <a class="min-w-0 flex-1" [routerLink]="['/stocks', stock.ticker]">
+          <div class="flex items-baseline gap-2">
+            <strong class="text-sm font-semibold text-gray-900">{{ stock.ticker }}</strong>
+            <span class="truncate text-sm text-gray-500">{{ stock.name }}</span>
           </div>
         </a>
 
         <!-- Price & change -->
-        <div class="stock-price-info">
-          <span class="stock-price">{{ formatPrice(stock.latestPrice) }}</span>
+        <div class="shrink-0 text-right">
+          <span class="block text-sm font-medium tabular-nums text-gray-900">{{ formatPrice(stock.latestPrice) }}</span>
           <span
-            class="stock-change"
-            [class.positive]="stock.priceChangePercent > 0"
-            [class.negative]="stock.priceChangePercent < 0"
-            [class.neutral]="stock.priceChangePercent === 0"
+            class="flex items-center justify-end gap-0.5 text-xs font-medium"
+            [class.text-green-600]="stock.priceChangePercent > 0"
+            [class.text-red-600]="stock.priceChangePercent < 0"
+            [class.text-gray-500]="stock.priceChangePercent === 0"
           >
-            <mat-icon class="change-icon">
-              {{ stock.priceChangePercent > 0 ? 'arrow_upward' : stock.priceChangePercent < 0 ? 'arrow_downward' : 'remove' }}
-            </mat-icon>
+            <app-icon
+              [name]="stock.priceChangePercent > 0 ? 'arrow_upward' : stock.priceChangePercent < 0 ? 'arrow_downward' : 'trending_flat'"
+              [size]="14"
+            />
             {{ stock.priceChangePercent | stockPercent }}
           </span>
         </div>
 
         <!-- Market Cap -->
-        <span class="stock-marketcap">{{ stock.marketCap | bigNumber }}</span>
+        <span class="hidden w-28 shrink-0 text-right text-sm tabular-nums text-gray-500 sm:block">{{ stock.marketCap | bigNumber }}</span>
 
         <!-- Remove button -->
         <button
-          mat-icon-button
-          color="warn"
-          class="remove-btn"
+          type="button"
+          class="btn-icon shrink-0 text-red-500 hover:bg-red-50 hover:text-red-600"
           (click)="removeStock(stock.ticker)"
-          matTooltip="Remove from watchlist"
+          title="Remove from watchlist"
+          aria-label="Remove stock"
         >
-          <mat-icon>close</mat-icon>
+          <app-icon name="close" [size]="18" />
         </button>
       </div>
     </div>
